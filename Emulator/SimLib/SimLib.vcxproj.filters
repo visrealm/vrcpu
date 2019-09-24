@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="register.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="counter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="computer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="alu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="register.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ram.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="counter.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="computer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="alu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
