@@ -1,11 +1,4 @@
 /*
- * Troy's 8-bit computer - esp8266 Wi-Fi program loader
- * 
- * Copyright (c) 2019 Troy Schrapel
- * 
- * Based on https://github.com/jamesbates/jcpu
- * 
- * This code is licensed under the MIT license
  * 
  * Needs to control
  *  Bus
@@ -21,9 +14,6 @@
  *    - Disables the BUS_W 3->8
  *    - Enables PGM
  *    - Sets the mode of the 157
- * 
- * https://github.com/visrealm/vrcpu
- *
  */
 
 
@@ -89,8 +79,10 @@ void setup() {
   
 
   wifiMulti.addAP(SSID1, PASS1);
+  wifiMulti.addAP("VisualRealmSoftware2", "jibbers182");
+  wifiMulti.addAP("VisualRealmSoftware5", "jibbers182");
+  wifiMulti.addAP("visrealmS9", "hem@cva182");
 
-  
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
   delay(10);
   Serial.println('\n');

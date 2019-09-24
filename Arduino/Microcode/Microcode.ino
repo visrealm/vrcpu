@@ -1,19 +1,25 @@
 /*
-
-Troy's 8-bit computer microcode
-
-This EEPROM write is page-write enabled. It writes all data sequentially.
-It also only writes changed pages. This can be much faster than writing
-the entire EEPROM for minor changes.
-
-All writes are verified with a read. In the  serial monitor:
-
-. = unchanged page
-o = page written successfully
-X = page write failed
-
-*/
-
+ * Troy's 8-bit computer - Arduino microcode EEPROM programmer
+ * 
+ * Copyright (c) 2019 Troy Schrapel
+ * 
+ * Based on https://github.com/jamesbates/jcpu
+ * 
+ * This code is licensed under the MIT license
+ * 
+ * This EEPROM write is page-write enabled. It writes all data sequentially.
+ * It also only writes changed pages. This can be much faster than writing
+ * the entire EEPROM for minor changes.
+ * 
+ * All writes are verified with a read. In the  serial monitor:
+ * 
+ * . = unchanged page
+ * o = page written successfully
+ * X = page write failed
+ * 
+ * https://github.com/visrealm/vrcpu
+ *
+ */
 
 #include "EEPROM.h"
 

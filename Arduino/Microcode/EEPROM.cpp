@@ -1,3 +1,16 @@
+/*
+ * Troy's 8-bit computer - Arudino EEPROM class
+ * 
+ * This class allows for page-write to EEPROMs
+ * 
+ * Copyright (c) 2019 Troy Schrapel
+ * 
+ * This code is licensed under the MIT license 
+ * 
+ * https://github.com/visrealm/vrcpu
+ *
+ */
+
 #include "EEPROM.h"
 #include "Arduino.h"
 
