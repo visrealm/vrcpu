@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Troy's Breadboard Computer - Emulator</title>
+  <link rel="shortcut icon" href="https://visualrealmsoftware.com/sites/default/files/favicon2.png" type="image/png" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+    body {
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-color: #262626;
+      overflow: hidden;
+    }
+  </style>
+
+
+</head>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="underscore.min.js"></script>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="https://cpu.visualrealmsoftware.com">Troy's Breadboard Computer</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="https://cpu.visualrealmsoftware.com/asm">Assembler</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="https://cpu.visualrealmsoftware.com/emu">Emulator</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://cpu.visualrealmsoftware.com/docs">Documentation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://cpu.visualrealmsoftware.com/gallery">Gallery</a>
+        </li>
+      </ul>
+    </div>
+
+  </nav>
+
+  <img id="img_cpu_base" src="img/cpu_base_m.png" style="display:none;"></img>
+  <img id="img_red_glow" src="img/red_glow.png" style="display:none;"></img>
+  <img id="img_red_on" src="img/red_on.png" style="display:none;"></img>
+  <img id="img_green_glow" src="img/green_glow.png" style="display:none;"></img>
+  <img id="img_green_on" src="img/green_on.png" style="display:none;"></img>
+  <img id="img_yellow_glow" src="img/yellow_glow.png" style="display:none;"></img>
+  <img id="img_yellow_on" src="img/yellow_on.png" style="display:none;"></img>
+  <img id="img_blue_glow" src="img/blue_glow.png" style="display:none;"></img>
+  <img id="img_blue_on" src="img/blue_on.png" style="display:none;"></img>
+
+  <img id="img_7sega" src="img/7sega.png" style="display:none;"></img>
+  <img id="img_7segb" src="img/7segb.png" style="display:none;"></img>
+  <img id="img_7segc" src="img/7segc.png" style="display:none;"></img>
+  <img id="img_7segd" src="img/7segd.png" style="display:none;"></img>
+  <img id="img_7sege" src="img/7sege.png" style="display:none;"></img>
+  <img id="img_7segf" src="img/7segf.png" style="display:none;"></img>
+  <img id="img_7segg" src="img/7segg.png" style="display:none;"></img>
+
+  <canvas id="canv" style="margin-top:10px;" width="100%" height="100%"></canvas>
+
+  <script type="text/javascript" src="cpemu_ui.js"></script>
+  <script type="text/javascript" src="cpemu.js"></script>
+
+</body>
+
+</html>
