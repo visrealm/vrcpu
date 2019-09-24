@@ -1,6 +1,13 @@
-//
-//  Emscripten WASM wrapper for Troy's cpemu C library
-//
+/*
+ * Troy's 8-bit computer - Emscripten WASM wrapper for Troy's cpemu C library
+ * 
+ * Copyright (c) 2019 Troy Schrapel
+ * 
+ * This code is licensed under the MIT license
+ *
+ * https://github.com/visrealm/vrcpu
+ *
+ */
 
 // The Module object: Our interface to the outside world. We import
 // and export values on it. There are various ways Module can be used:

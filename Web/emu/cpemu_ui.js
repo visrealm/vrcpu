@@ -1,4 +1,13 @@
-/* Web front-end for Troy's cpemu WASM library */
+/*
+ * Troy's 8-bit computer - Web front-end for Troy's cpemu WASM library
+ * 
+ * Copyright (c) 2019 Troy Schrapel
+ * 
+ * This code is licensed under the MIT license
+ *
+ * https://github.com/visrealm/vrcpu
+ *
+ */
 
     function getQueryParams()
     {

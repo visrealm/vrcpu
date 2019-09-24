@@ -11,10 +11,11 @@
  *
  */
 
-#include "EEPROM.h"
+#include "vrEEPROM.h"
 #include "Arduino.h"
 
 #define DEFAULT_PAGE_SIZE 128
+
 
 EEPROM::EEPROM(
   int dataPin0,

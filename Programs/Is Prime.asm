@@ -1,7 +1,16 @@
 ; IS THE NUMBER PRIME?
-; If it's prime, the rersult will be 1 (largest number divisble)
+;
+; Terribly basic algorithm to find if a number is prime.
+; 
+; The result shown will be its largest factor
+; If it's prime, the result will be 1
+;
+; Change the number on the first line below - is it prime?
 
-	data Rd, #235
+NUMBER = 57
+
+.start:
+	data Rd, NUMBER
 
     mov Rb, Rd
 	data Ra, #7
@@ -34,7 +43,7 @@
 	hlt
 	
 .test:
-	jc .next
+	jnc .next
 	jmp .sub
 	
 .noresult:

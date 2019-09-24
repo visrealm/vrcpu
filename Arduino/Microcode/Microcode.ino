@@ -21,7 +21,7 @@
  *
  */
 
-#include "EEPROM.h"
+#include "vrEEPROM.h"
 
 
 // Output a report of unused op codes after each EEPROM is written ?

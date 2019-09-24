@@ -1,20 +1,20 @@
 ; Show all power series (n^1, n^2, n^3, ...) up to base 15. Limited
 ; to results <= 255
+; Adapted from the program by James Bates at https://github.com/jamesbates/jcpu
 
 .begin:
-	clra
 	data Ra, #1
 	sto 0x00, Ra
 	data Rb, #1
-	sto 0x01, Rb	
+	sto 0x01, Rb
 	
 .next:
-	data Rc, .dopow
+    data Rc, .dopow
 	call
 	lod Rb, 0x01
 	tst Rb
-	jz .begin
-	jmp .next
+	jnz .next
+	jmz
 	
 .dopow:
 	lod Ra, 0x00

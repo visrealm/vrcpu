@@ -1,16 +1,18 @@
 ; REVERSE FIBONACCI
+;
+; Fibonnaci sequence - in reverse
 
-begin:
+.begin:
 	data Rb, #144
 	data Rd, #233
 	
-loop:	
+.loop:	
 	mov Rc,Rd
 	sub Rc,Rb
 	mov Rd,Rb
 	mov Rb,Rc
-	jnz loop
+	jnz .loop
 	
-next:	
+.next:	
 	mov Rd,Rb
-	jmp begin
+	jmp .begin
