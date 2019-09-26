@@ -8,7 +8,7 @@ Code, documentation, schematics, notes for my [Ben Eater](https://eater.net/8bit
 * Microcode EEPROM writer
 * DecimalDisplay EEPROM writer
 * ESP8266 Wi-Fi Program Loader
-* Page-write-enabled EEPROM writer library
+* Page-write-enabled EEPROM writer library (Tested on Greenliant GLS29EE010)
 ### Emulator (C library)
 * SimLib - The emulator core
 * SimInst - A single instance interface of the emulator core
