@@ -1,7 +1,7 @@
 /*
  * Troy's 8-bit computer - Arudino EEPROM class
  * 
- * This class allows for page-write to EEPROMs
+ * This class allows for page-write to EEPROMs (Tested on Greenliant GLS29EE010)
  * 
  * Copyright (c) 2019 Troy Schrapel
  * 
