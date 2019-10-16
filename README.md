@@ -21,7 +21,7 @@ Various ASM programs used to test the assembler (and the emualtor and physcial c
 ### Web
 A copy of most files from [https://cpu.visualrealmsoftware.com](https://cpu.visualrealmsoftware.com "https://cpu.visualrealmsoftware.com") including:
 * Assembler derived from [customasm](https://github.com/hlorenzi/customasm "customasm")
-* Emulator
+* Web-based Emulator (C engine compiled to WASM)
 
 ## Videos
 ##### Troy's breadboard computer - Triangular numbers
