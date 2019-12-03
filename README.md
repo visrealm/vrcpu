@@ -1,5 +1,5 @@
 # vrCPU
-Code, documentation, schematics, notes for my [Ben Eater](https://eater.net/8bit "Ben Eater") and [James Bates](https://github.com/jamesbates/jcpu "James Bates") inspired breadboard computer and assembler and web-based [emulator](https://cpu.visualrealmsoftware.com/emu/ "emulator") using a C backend compiled to WASM.
+Code, documentation, schematics, notes for my [Ben Eater](https://eater.net/8bit "Ben Eater") and [James Bates](https://github.com/jamesbates/jcpu "James Bates") inspired breadboard computer, assembler and web-based [emulator](https://cpu.visualrealmsoftware.com/emu/ "emulator") using a C backend compiled to WASM.
 
 ![The real deal](https://cpu.visualrealmsoftware.com/img/computer_gh.jpg "The real deal")
 
