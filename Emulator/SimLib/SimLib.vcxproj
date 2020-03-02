@@ -131,6 +131,7 @@
     <ClInclude Include="bus.h" />
     <ClInclude Include="computer.h" />
     <ClInclude Include="counter.h" />
+    <ClInclude Include="lcd.h" />
     <ClInclude Include="ram.h" />
     <ClInclude Include="register.h" />
     <ClInclude Include="rom.h" />
@@ -141,6 +142,7 @@
     <ClCompile Include="bus.c" />
     <ClCompile Include="computer.c" />
     <ClCompile Include="counter.c" />
+    <ClCompile Include="lcd.c" />
     <ClCompile Include="ram.c" />
     <ClCompile Include="register.c" />
     <ClCompile Include="rom.c" />

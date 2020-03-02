@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Troy's 8-bit computer - Emulator
  *
  * Copyright (c) 2019 Troy Schrapel
@@ -12,6 +12,7 @@
 
 #include "siminst.h"
 #include "computer.h"
+#include "lcd.h"
 #include <stdio.h>
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
@@ -35,6 +36,51 @@ void printReg(const char *name, byte value)
 	printf("%s = "BYTE_TO_BINARY_PATTERN", "BYTE_TO_BINARY_PATTERN"\n", ram->value->name, BYTE_TO_BINARY(ram->bytes[0]), BYTE_TO_BINARY(ram->bytes[1]));
 }*/
 
+
+int main()
+{
+	LCD* lcd = newLCD(16, 2);
+	sendCommand(lcd, LCD_CMD_ENTRY_MODE | LCD_CMD_ENTRY_MODE_INCREMENT);
+	writeByte(lcd, 'H');
+	writeByte(lcd, 'e');
+	writeByte(lcd, 'l');
+	writeByte(lcd, 'l');
+	writeByte(lcd, 'o');
+	writeByte(lcd, ',');
+	writeByte(lcd, ' ');
+	writeByte(lcd, 'w');
+	writeByte(lcd, 'o');
+	writeByte(lcd, 'r');
+	writeByte(lcd, 'l');
+	writeByte(lcd, 'd');
+	writeByte(lcd, '!');
+	sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (7));
+	writeByte(lcd, 'T');
+	writeByte(lcd, 'r');
+	writeByte(lcd, 'o');
+	writeByte(lcd, 'y');
+	writeByte(lcd, '!');
+
+	printf("%s\n", readLine(lcd, 0));
+
+	for (int y = 0; y < 8; ++y)
+	{
+		char* c = readLine(lcd, 0);
+		while ((*c) != '\0')
+		{
+			byte* bits = charBits(*c);
+			for (int x = 0; x < 5; ++x)
+			{
+				printf("%c", bits[x] & (0x80 >> y) ? 'X' : ' ');
+			}
+			printf(" ");
+			++c;
+		}
+		printf("\n");
+	}
+}
+
+#if 0
 int main()
 {
 	siInitialise();
@@ -96,3 +142,4 @@ int main()
 
 	return 0;
 }
+#endif
