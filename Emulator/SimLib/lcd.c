@@ -13,35 +13,83 @@
 #include <stdlib.h>
 #include <memory.h>
 
+#define CHAR_WIDTH  5
+#define CHAR_HEIGHT 8
+#define DATA_WIDTH 40
+#define DATA_HEIGHT 4
+
+struct LCD_s
+{
+	int width;
+	int height;
+
+	byte entryModeFlags;
+	byte displayFlags;
+
+	char* data;
+	char* ptr;
+	char* pixels;
+	int scrollOffset;
+
+	int pixelsWidth;
+	int pixelsHeight;
+	int numPixels;
+};
+
+
 DLLEXPORT LCD* newLCD(int width, int height)
 {
 	LCD* lcd = (LCD*)malloc(sizeof(LCD));
 	if (lcd != NULL)
 	{
+		if (height > 4) height = 4;
+
 		lcd->width = width;
 		lcd->height = height;
 
-		size_t datalen = ((size_t)width + 1) * height;
+		size_t datalen = LINE_WIDTH * height;
 		lcd->data = (char*)malloc(datalen);
 		if (lcd->data != NULL)
 		{
 			memset(lcd->data, 0, datalen);
 		}
 		lcd->ptr = lcd->data;
+		lcd->scrollOffset = 0;
+		lcd->pixelsWidth  = lcd->width * (CHAR_WIDTH + 1) - 1;
+		lcd->pixelsHeight = lcd->height * (CHAR_HEIGHT + 1) - 1;
+		lcd->numPixels = lcd->pixelsWidth * lcd->pixelsHeight;
+		lcd->pixels = (char*)malloc(lcd->numPixels);
+		memset(lcd->pixels, -1, lcd->numPixels);
+		updatePixels(lcd);
 	}
 	return lcd;
 }
 
 DLLEXPORT void destroyLCD(LCD* lcd)
 {
-	free(lcd);
+	if (lcd)
+	{
+		free(lcd->data);
+		free(lcd->pixels);
+		memset(lcd, 0, sizeof(lcd));
+		free(lcd);
+	}
 }
 
 DLLEXPORT void sendCommand(LCD* lcd, byte command)
 {
 	if (command & LCD_CMD_SET_DRAM_ADDR)
 	{
-		lcd->ptr = lcd->data + (command & 0x7f);
+		int offset = (command & 0x7f);
+		if (offset < 0)
+		{
+			offset = 0;
+		}
+		else if (offset >= LINE_WIDTH * lcd->height)
+		{
+			offset = LINE_WIDTH * lcd->height - 1;
+		}
+		lcd->ptr = lcd->data + offset;
 	}
 	else if (command & LCD_CMD_SET_CGRAM_ADDR)
 	{
@@ -77,23 +125,38 @@ DLLEXPORT void sendCommand(LCD* lcd, byte command)
 	}
 }
 
+void increment(LCD* lcd)
+{
+	++lcd->ptr;
+	size_t offset = lcd->ptr - lcd->data;
+	if ((offset + 1) % (LINE_WIDTH) == 0)
+	{
+		++lcd->ptr;
+	}
+	if (lcd->ptr >= lcd->data + (lcd->width + 1) * lcd->height)
+	{
+		lcd->ptr = lcd->data;
+	}
+}
+
 DLLEXPORT void writeByte(LCD* lcd, byte data)
 {
 	*lcd->ptr = data;
 	if (lcd->entryModeFlags & LCD_CMD_ENTRY_MODE_INCREMENT)
 	{
-		++lcd->ptr;
-		int offset = lcd->ptr - lcd->data;
-		if (offset % lcd->width == 0)
-		{
-			++lcd->ptr;
-		}
-		if (lcd->ptr > lcd->data + (lcd->width + 1) * lcd->height)
-		{
-			lcd->ptr = lcd->data;
-		}
+		increment(lcd);
 	}
 }
+
+DLLEXPORT void writeString(LCD* lcd, const char* str)
+{
+	const char* ptr = str;
+	while (*ptr != '\0')
+	{
+		writeByte(lcd, *ptr++);
+	}
+}
+
 
 DLLEXPORT byte readByte(LCD* lcd)
 {
@@ -105,7 +168,7 @@ DLLEXPORT const char* readLine(LCD* lcd, int row)
 	return lcd->data + (row * (lcd->width + 1));
 }
 
-static const byte lcd_font[128][5];
+static const byte lcd_font[128][CHAR_WIDTH];
 DLLEXPORT const byte* charBits(byte c)
 {
 	if (c < 128)
@@ -113,6 +176,50 @@ DLLEXPORT const byte* charBits(byte c)
 		return lcd_font[c];
 	}
 	return lcd_font[0];
+}
+
+
+DLLEXPORT void updatePixels(LCD* lcd)
+{
+	char *pixel = lcd->pixels;
+
+	//printf("pixelsWidth: %d\n", lcd->pixelsWidth);
+	//printf("pixelsHeight: %d\n", lcd->pixelsHeight);
+
+	for (int row = 0; row < lcd->height; ++row)
+	{
+		for (int col = 0; col < lcd->width; ++col)
+		{
+			char *charTopLeft = lcd->pixels + (row * (CHAR_HEIGHT + 1) * lcd->pixelsWidth) + col * (CHAR_WIDTH + 1);
+			char c = *(lcd->data + (row * (lcd->width + 1) + col));
+
+			const byte* bits = charBits(c);
+
+			for (int y = 0; y < CHAR_HEIGHT; ++y)
+			{
+				pixel = charTopLeft + y * lcd->pixelsWidth;
+				for (int x = 0; x < CHAR_WIDTH; ++x)
+				{
+					*pixel = (bits[x] & (0x80 >> y)) ? 1 : 0;
+					++pixel;
+				}
+			}
+		}
+	}
+}
+
+DLLEXPORT void numPixels(LCD* lcd, int* width, int* height)
+{
+	if (width) *width = lcd->pixelsWidth;
+	if (height) *height = lcd->pixelsHeight;
+}
+
+DLLEXPORT char pixelState(LCD* lcd, int x, int y)
+{
+	int offset = y * lcd->pixelsWidth + x;
+	if (offset >= 0 && offset < lcd->numPixels)
+		return lcd->pixels[offset];
+	return -1;
 }
 
 

@@ -36,27 +36,22 @@
 #define LCD_CMD_SET_CGRAM_ADDR         0b01000000
 #define LCD_CMD_SET_DRAM_ADDR          0b10000000
 
-
-typedef struct DLLEXPORT
-{
-	int width;
-	int height;
-
-	byte entryModeFlags;
-	byte displayFlags;
-
-	char* data;
-	char* ptr;
-} LCD;
+struct LCD_s;
+typedef struct DLLEXPORT LCD_s LCD;
 
 DLLEXPORT LCD* newLCD(int width, int height);
 DLLEXPORT void destroyLCD(LCD* lcd);
 
 DLLEXPORT void sendCommand(LCD* lcd, byte data);
-DLLEXPORT void writeByte(LCD *lcd, byte data);
+DLLEXPORT void writeByte(LCD* lcd, byte data);
+DLLEXPORT void writeString(LCD* lcd, const char *str);
 DLLEXPORT byte readByte(LCD* lcd);
 
 DLLEXPORT const char* readLine(LCD* lcd, int row);
 DLLEXPORT const byte *charBits(byte c);
+
+DLLEXPORT void updatePixels(LCD* lcd);
+DLLEXPORT void numPixels(LCD *lcd, int* width, int* height);
+DLLEXPORT char pixelState(LCD *lcd, int x, int y);
 
 #endif

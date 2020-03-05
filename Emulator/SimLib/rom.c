@@ -57,7 +57,7 @@ DLLEXPORT Rom* newRomFromString(const char* romStr)
 	Rom* r = (Rom*)malloc(sizeof(Rom));
 	if (r != NULL)
 	{
-		byte buf[10];
+		byte buf[10] = {0};
 		r->size = 32767 * 4;
 		r->bytes = malloc(r->size);
 		memset(r->bytes, 0, r->size);
