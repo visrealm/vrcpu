@@ -37,9 +37,46 @@ void printReg(const char *name, byte value)
 }*/
 
 
+void printLine(const char *line)
+{
+	for (int y = 0; y < 8; ++y)
+	{
+		char* c = line;
+		while ((*c) != '\0')
+		{
+			byte* bits = charBits(*c);
+			for (int x = 0; x < 5; ++x)
+			{
+				printf("%c", bits[x] & (0x80 >> y) ? 'X' : ' ');
+			}
+			printf(" ");
+			++c;
+		}
+		printf("\n");
+	}
+
+}
+
+void outputLcd(LCD* lcd)
+{
+	int width = 0, height = 0;
+	numPixels(lcd, &width, &height);
+	updatePixels(lcd);
+
+	for (int y = 0; y < height; ++y)
+	{
+		for (int x = 0; x < width; ++x)
+		{
+			char pix = pixelState(lcd, x, y);
+			printf("%c", (pix < 0) ? ' ' : (pix ? 'X' : '.'));
+		}
+		printf("\n");
+	}
+}
+
 int main()
 {
-	LCD* lcd = newLCD(16, 2);
+	LCD* lcd = newLCD(5, 2);
 	sendCommand(lcd, LCD_CMD_ENTRY_MODE | LCD_CMD_ENTRY_MODE_INCREMENT);
 	writeByte(lcd, 'H');
 	writeByte(lcd, 'e');
@@ -55,29 +92,14 @@ int main()
 	writeByte(lcd, 'd');
 	writeByte(lcd, '!');
 	sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (7));
-	writeByte(lcd, 'T');
-	writeByte(lcd, 'r');
-	writeByte(lcd, 'o');
-	writeByte(lcd, 'y');
-	writeByte(lcd, '!');
+	writeString(lcd, "Troy_");
 
-	printf("%s\n", readLine(lcd, 0));
+	outputLcd(lcd);
 
-	for (int y = 0; y < 8; ++y)
-	{
-		char* c = readLine(lcd, 0);
-		while ((*c) != '\0')
-		{
-			byte* bits = charBits(*c);
-			for (int x = 0; x < 5; ++x)
-			{
-				printf("%c", bits[x] & (0x80 >> y) ? 'X' : ' ');
-			}
-			printf(" ");
-			++c;
-		}
-		printf("\n");
-	}
+	//printf("%s\n", readLine(lcd, 0));
+
+//	printLine(readLine(lcd, 0));
+//	printLine(readLine(lcd, 1));
 }
 
 #if 0
