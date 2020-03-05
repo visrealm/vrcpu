@@ -40,12 +40,16 @@
 #define CPU_CLK   D7
 #define CPU_PGM   D8
 
-#define SSID1 "MyWiFi"
-#define PASS1 "password"
+#define SSID1 "VisualRealmSoftware2"
+#define PASS1 "XXXXXX"
+
+#define SSID2 "visrealmS9"
+#define PASS2 "XXXXXX"
+
 
 // parameters for the aseembler web host (HTTPS)
 #define PROGRAM_HOST     "cpu.visualrealmsoftware.com"
-#define PROGRAM_HOST_KEY "daeac868da8faa1ebfd55224f6b51544924ea90a"
+#define PROGRAM_HOST_KEY "45e8c64244a1ac0b7002d566783d5f141db24314"
 #define PROGRAM_PATH     "/asm/current/"
 
 // seconds between program poll requests
@@ -87,6 +91,8 @@ void setup() {
   
 
   wifiMulti.addAP(SSID1, PASS1);
+  wifiMulti.addAP(SSID2, PASS2);
+  //wifiMulti.addAP(SSID3, PASS3);
 
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
   delay(10);
@@ -112,6 +118,7 @@ void loadProgram(String hex)
   if (hex.length() > 512)
     return;
 
+  // convert the hex program to binary
   byte code[256];
   size_t bytes = hex.length() / 2;
   byte tmp = 0;
@@ -123,41 +130,50 @@ void loadProgram(String hex)
   Serial.print("Bytes: "); 
   Serial.println(bytes);  
 
+  // take control back from the CPU
   pinMode(CPU_RST, OUTPUT);
   digitalWrite(CPU_RST, LOW);
   digitalWrite(CPU_EN, LOW);
-  
   digitalWrite(CPU_PGM, HIGH);
 
+  // cycle through the program's bytes
   for (size_t i = 0; i < bytes; ++i)
   {
+    // output the address to the bus
     digitalWrite(DFF_CLK, LOW);
     shiftOut(SHIFT_DATA, SHIFT_CLK, LSBFIRST, i);
     digitalWrite(DFF_CLK, HIGH);
 
+    // enable MAW
     digitalWrite(CPU_MA_W, LOW);
-    
+
+    // cycle clock
     delay(5);    
     digitalWrite(CPU_CLK, HIGH);
     delay(5);    
     digitalWrite(CPU_CLK, LOW);
-   
+
+   // output the data (code) to bus
     digitalWrite(DFF_CLK, LOW);
     shiftOut(SHIFT_DATA, SHIFT_CLK, LSBFIRST, code[i]);
     digitalWrite(DFF_CLK, HIGH);
     
+    // enable MEM write
     digitalWrite(CPU_MEM_W, LOW);
     digitalWrite(CPU_MA_W, HIGH);
     
+    // cycle clock
     delay(5);    
     digitalWrite(CPU_CLK, HIGH);
     delay(5);    
     digitalWrite(CPU_CLK, LOW);
-  digitalWrite(CPU_MEM_W, HIGH);
+    
+    digitalWrite(CPU_MEM_W, HIGH);
   }
+
+  // give control back to the CPU
   digitalWrite(CPU_MEM_W, HIGH);
   digitalWrite(CPU_MA_W, HIGH);
-  
   digitalWrite(CPU_PGM, LOW);
   digitalWrite(CPU_EN, HIGH);  
   delay(5);    
