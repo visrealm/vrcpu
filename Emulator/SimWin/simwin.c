@@ -68,7 +68,7 @@ void outputLcd(LCD* lcd)
 		for (int x = 0; x < width; ++x)
 		{
 			char pix = pixelState(lcd, x, y);
-			printf("%c", (pix < 0) ? ' ' : (pix ? 'X' : '.'));
+			printf("%c", (pix < 0) ? ' ' : (pix ? '#' : '.'));
 		}
 		printf("\n");
 	}
@@ -76,23 +76,26 @@ void outputLcd(LCD* lcd)
 
 int main()
 {
-	LCD* lcd = newLCD(5, 2);
+	LCD* lcd = newLCD(16, 2);
 	sendCommand(lcd, LCD_CMD_ENTRY_MODE | LCD_CMD_ENTRY_MODE_INCREMENT);
+	sendCommand(lcd, LCD_CMD_SHIFT | LCD_CMD_SHIFT_DISPLAY | LCD_CMD_SHIFT_RIGHT);
+	sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (1));
 	writeByte(lcd, 'H');
 	writeByte(lcd, 'e');
 	writeByte(lcd, 'l');
 	writeByte(lcd, 'l');
 	writeByte(lcd, 'o');
-	writeByte(lcd, ',');
+	/*writeByte(lcd, ',');
 	writeByte(lcd, ' ');
 	writeByte(lcd, 'w');
 	writeByte(lcd, 'o');
 	writeByte(lcd, 'r');
-	writeByte(lcd, 'l');
+	writeByte(lcd, 'l'); 
 	writeByte(lcd, 'd');
 	writeByte(lcd, '!');
-	sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (7));
+	//sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (7));
 	writeString(lcd, "Troy_");
+	writeString(lcd, "abcdeABCDE");*/
 
 	outputLcd(lcd);
 

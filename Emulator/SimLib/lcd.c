@@ -12,6 +12,7 @@
 #include "lcd.h"
 #include <stdlib.h>
 #include <memory.h>
+#include <math.h>
 
 #define CHAR_WIDTH  5
 #define CHAR_HEIGHT 8
@@ -24,6 +25,7 @@ struct LCD_s
 	int height;
 
 	byte entryModeFlags;
+	byte shiftFlags;
 	byte displayFlags;
 
 	char* data;
@@ -47,13 +49,16 @@ DLLEXPORT LCD* newLCD(int width, int height)
 		lcd->width = width;
 		lcd->height = height;
 
-		size_t datalen = LINE_WIDTH * height;
+		size_t datalen = DATA_WIDTH * height;
 		lcd->data = (char*)malloc(datalen);
 		if (lcd->data != NULL)
 		{
 			memset(lcd->data, 0, datalen);
 		}
 		lcd->ptr = lcd->data;
+		lcd->entryModeFlags = 0;
+		lcd->shiftFlags = 0;
+		lcd->displayFlags = 0;
 		lcd->scrollOffset = 0;
 		lcd->pixelsWidth  = lcd->width * (CHAR_WIDTH + 1) - 1;
 		lcd->pixelsHeight = lcd->height * (CHAR_HEIGHT + 1) - 1;
@@ -85,9 +90,9 @@ DLLEXPORT void sendCommand(LCD* lcd, byte command)
 		{
 			offset = 0;
 		}
-		else if (offset >= LINE_WIDTH * lcd->height)
+		else if (offset >= DATA_WIDTH * lcd->height)
 		{
-			offset = LINE_WIDTH * lcd->height - 1;
+			offset = DATA_WIDTH * lcd->height - 1;
 		}
 		lcd->ptr = lcd->data + offset;
 	}
@@ -97,10 +102,7 @@ DLLEXPORT void sendCommand(LCD* lcd, byte command)
 	}
 	else if (command & LCD_CMD_SHIFT)
 	{
-		if (command & LCD_CMD_SHIFT_CURSOR)
-		{
-
-		}
+		lcd->shiftFlags = command;
 	}
 	else if (command & LCD_CMD_DISPLAY)
 	{
@@ -129,21 +131,43 @@ void increment(LCD* lcd)
 {
 	++lcd->ptr;
 	size_t offset = lcd->ptr - lcd->data;
-	if ((offset + 1) % (LINE_WIDTH) == 0)
+	if ((offset + 1) % (DATA_WIDTH) == 0)
 	{
 		++lcd->ptr;
 	}
-	if (lcd->ptr >= lcd->data + (lcd->width + 1) * lcd->height)
+	if (lcd->ptr >= lcd->data + (DATA_WIDTH) * lcd->height)
 	{
 		lcd->ptr = lcd->data;
+	}
+}
+
+void decrement(LCD* lcd)
+{
+	--lcd->ptr;
+	if (lcd->ptr < lcd->data)
+	{
+		lcd->ptr = lcd->data + (DATA_WIDTH * lcd->height) - 1;
 	}
 }
 
 DLLEXPORT void writeByte(LCD* lcd, byte data)
 {
 	*lcd->ptr = data;
-	if (lcd->entryModeFlags & LCD_CMD_ENTRY_MODE_INCREMENT)
+
+	if (lcd->shiftFlags & LCD_CMD_SHIFT_RIGHT)
 	{
+		if (lcd->shiftFlags & LCD_CMD_SHIFT_DISPLAY)
+		{
+			--lcd->scrollOffset;
+		}
+		decrement(lcd);
+	}
+	else
+	{
+		if (lcd->shiftFlags & LCD_CMD_SHIFT_DISPLAY)
+		{
+			++lcd->scrollOffset;
+		}
 		increment(lcd);
 	}
 }
@@ -178,6 +202,16 @@ DLLEXPORT const byte* charBits(byte c)
 	return lcd_font[0];
 }
 
+DLLEXPORT int getDataOffset(LCD* lcd, int row, int col)
+{
+	int offset = col % DATA_WIDTH;
+	if (col < 0)
+	{
+		offset = DATA_WIDTH + offset;
+		//printf("%d: %d\n", col, offset);
+	}
+	return (row * DATA_WIDTH) + offset;
+}
 
 DLLEXPORT void updatePixels(LCD* lcd)
 {
@@ -191,7 +225,10 @@ DLLEXPORT void updatePixels(LCD* lcd)
 		for (int col = 0; col < lcd->width; ++col)
 		{
 			char *charTopLeft = lcd->pixels + (row * (CHAR_HEIGHT + 1) * lcd->pixelsWidth) + col * (CHAR_WIDTH + 1);
-			char c = *(lcd->data + (row * (lcd->width + 1) + col));
+
+			int dataCol = col + lcd->scrollOffset;
+
+			char c = *(lcd->data + getDataOffset(lcd, row, dataCol));
 
 			const byte* bits = charBits(c);
 

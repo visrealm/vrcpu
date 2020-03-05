@@ -45,6 +45,7 @@ DLLEXPORT void destroyLCD(LCD* lcd);
 DLLEXPORT void sendCommand(LCD* lcd, byte data);
 DLLEXPORT void writeByte(LCD* lcd, byte data);
 DLLEXPORT void writeString(LCD* lcd, const char *str);
+DLLEXPORT int getDataOffset(LCD* lcd, int row, int col);
 DLLEXPORT byte readByte(LCD* lcd);
 
 DLLEXPORT const char* readLine(LCD* lcd, int row);
