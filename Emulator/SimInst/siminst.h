@@ -54,5 +54,9 @@ SIDLLEXPORT byte siGetValue(SIComponent component);
 
 SIDLLEXPORT unsigned siGetControlWord();
 
+SIDLLEXPORT void siLcdCommand(int rs, byte data);
+SIDLLEXPORT int siLcdNumPixelsX();
+SIDLLEXPORT int siLcdNumPixelsY();
+SIDLLEXPORT int siLcdPixelState(int x, int y);
 
 #endif

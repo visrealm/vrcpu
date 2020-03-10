@@ -45,3 +45,28 @@ int simLibGetControlWord()
 {
 	return (int)siGetControlWord();
 }
+
+
+EMSCRIPTEN_KEEPALIVE
+void simLibLcdCommand(int rs, unsigned char data)
+{
+	siLcdCommand(rs, data);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int simLibLcdNumPixelsX()
+{
+	return (int)siLcdNumPixelsX();
+}
+
+EMSCRIPTEN_KEEPALIVE
+int simLibLcdNumPixelsY()
+{
+	return (int)siLcdNumPixelsY();
+}
+
+EMSCRIPTEN_KEEPALIVE
+int simLibLcdPixelState(int x, int y)
+{
+	return (int)siLcdPixelState(x, y);
+}

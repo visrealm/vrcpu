@@ -49,7 +49,7 @@ DLLEXPORT int getDataOffset(LCD* lcd, int row, int col);
 DLLEXPORT byte readByte(LCD* lcd);
 
 DLLEXPORT const char* readLine(LCD* lcd, int row);
-DLLEXPORT const byte *charBits(byte c);
+DLLEXPORT const byte *charBits(LCD* lcd, byte c);
 
 DLLEXPORT void updatePixels(LCD* lcd);
 DLLEXPORT void numPixels(LCD *lcd, int* width, int* height);

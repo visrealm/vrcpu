@@ -9,11 +9,13 @@
  *
  */
 
-
+#include <windows.h>
+#undef byte
 #include "siminst.h"
 #include "computer.h"
 #include "lcd.h"
 #include <stdio.h>
+#include <conio.h>
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)  \
@@ -31,73 +33,118 @@ void printReg(const char *name, byte value)
 	printf("%s = "BYTE_TO_BINARY_PATTERN"\n", name, BYTE_TO_BINARY(value));
 }
 
-/*void printMem(Ram* ram)
-{
-	printf("%s = "BYTE_TO_BINARY_PATTERN", "BYTE_TO_BINARY_PATTERN"\n", ram->value->name, BYTE_TO_BINARY(ram->bytes[0]), BYTE_TO_BINARY(ram->bytes[1]));
-}*/
-
-
-void printLine(const char *line)
-{
-	for (int y = 0; y < 8; ++y)
-	{
-		char* c = line;
-		while ((*c) != '\0')
-		{
-			byte* bits = charBits(*c);
-			for (int x = 0; x < 5; ++x)
-			{
-				printf("%c", bits[x] & (0x80 >> y) ? 'X' : ' ');
-			}
-			printf(" ");
-			++c;
-		}
-		printf("\n");
-	}
-
-}
 
 void outputLcd(LCD* lcd)
 {
+	static int hasOutput = 0;
+	if (hasOutput)
+	{
+		printf("%c[18A", 27);
+	}
+
+
+	hasOutput = 1;
+
 	int width = 0, height = 0;
 	numPixels(lcd, &width, &height);
 	updatePixels(lcd);
 
-	for (int y = 0; y < height; ++y)
+	char* line = malloc(width + 1);
+	if (line)
 	{
-		for (int x = 0; x < width; ++x)
+		line[width] = '\0';
+
+		for (int y = 0; y < height; ++y)
 		{
-			char pix = pixelState(lcd, x, y);
-			printf("%c", (pix < 0) ? ' ' : (pix ? '#' : '.'));
+			for (int x = 0; x < width; ++x)
+			{
+				char pix = pixelState(lcd, x, y);
+				line[x] = (pix < 0) ? ' ' : (pix ? '#' : '.');
+			}
+			printf("%s\n", line);
 		}
-		printf("\n");
+
+		free(line);
 	}
 }
 
 int main()
 {
 	LCD* lcd = newLCD(16, 2);
-	sendCommand(lcd, LCD_CMD_ENTRY_MODE | LCD_CMD_ENTRY_MODE_INCREMENT);
-	sendCommand(lcd, LCD_CMD_SHIFT | LCD_CMD_SHIFT_DISPLAY | LCD_CMD_SHIFT_RIGHT);
-	sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (1));
-	writeByte(lcd, 'H');
-	writeByte(lcd, 'e');
-	writeByte(lcd, 'l');
-	writeByte(lcd, 'l');
-	writeByte(lcd, 'o');
-	/*writeByte(lcd, ',');
-	writeByte(lcd, ' ');
-	writeByte(lcd, 'w');
-	writeByte(lcd, 'o');
-	writeByte(lcd, 'r');
-	writeByte(lcd, 'l'); 
-	writeByte(lcd, 'd');
-	writeByte(lcd, '!');
-	//sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (7));
-	writeString(lcd, "Troy_");
-	writeString(lcd, "abcdeABCDE");*/
+	sendCommand(lcd, LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON | LCD_CMD_DISPLAY_CURSOR);
+	//sendCommand(lcd, LCD_CMD_ENTRY_MODE | LCD_CMD_ENTRY_MODE_SHIFT | LCD_CMD_ENTRY_MODE_INCREMENT);// | LCD_CMD_ENTRY_MODE_DECREMENT);
+	//sendCommand(lcd, LCD_CMD_SHIFT | LCD_CMD_SHIFT_DISPLAY | LCD_CMD_SHIFT_RIGHT);
+	//sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR | (1));
+	sendCommand(lcd, LCD_CMD_SET_CGRAM_ADDR);
+	writeByte(lcd, 0x1f);
+	writeByte(lcd, 0x11);
+	writeByte(lcd, 0x11);
+	writeByte(lcd, 0x11);
+	writeByte(lcd, 0x11);
+	writeByte(lcd, 0x11);
+	writeByte(lcd, 0x11);
+	writeByte(lcd, 0x1f);
 
-	outputLcd(lcd);
+	writeByte(lcd, 0x04);
+	writeByte(lcd, 0x0e);
+	writeByte(lcd, 0x04);
+	writeByte(lcd, 0x1f);
+	writeByte(lcd, 0x04);
+	writeByte(lcd, 0x04);
+	writeByte(lcd, 0x0a);
+	writeByte(lcd, 0x11);
+
+	sendCommand(lcd, LCD_CMD_SET_DRAM_ADDR);
+
+
+	char c = 0;
+	while (c != 27)
+	{
+		if (c)
+		{
+			if (c == -32)
+			{
+				c = _getch() % 128;
+				switch (c)
+				{
+					case 'K': // left
+						sendCommand(lcd, LCD_CMD_SHIFT | LCD_CMD_SHIFT_CURSOR | LCD_CMD_SHIFT_LEFT);
+						break;
+
+					case 'M': // right
+						sendCommand(lcd, LCD_CMD_SHIFT | LCD_CMD_SHIFT_CURSOR | LCD_CMD_SHIFT_RIGHT);
+						break;
+
+					case 'H': // up
+						sendCommand(lcd, LCD_CMD_SHIFT | LCD_CMD_SHIFT_DISPLAY | LCD_CMD_SHIFT_LEFT);
+						break;
+
+					case 'P': // down
+						sendCommand(lcd, LCD_CMD_SHIFT | LCD_CMD_SHIFT_DISPLAY | LCD_CMD_SHIFT_RIGHT);
+						break;
+
+					case 5: // F11
+						writeByte(lcd, 0);
+						break;
+
+					case 6: // F12
+						writeByte(lcd, 1);
+						break;
+
+					default:
+						writeByte(lcd, c);
+						break;
+				}
+			}
+			else
+			{
+				writeByte(lcd, c);
+			}
+		}
+		outputLcd(lcd);
+		c = _getch();
+	}
+
 
 	//printf("%s\n", readLine(lcd, 0));
 

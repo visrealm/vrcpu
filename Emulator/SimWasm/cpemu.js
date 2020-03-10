@@ -193,7 +193,7 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 261120, "filename": "/rom.hex"}], "remote_package_size": 261120, "package_uuid": "efb6e6c4-567c-4a03-81ad-5f15c8b1ebc2"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 261120, "filename": "/rom.hex"}], "remote_package_size": 261120, "package_uuid": "f08bd7f4-38de-4650-8d65-6cf201a2c3a1"});
 
 })();
 
@@ -1397,11 +1397,11 @@ function updateGlobalBufferAndViews(buf) {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 5456,
+    STACK_BASE = 6112,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5248336,
-    DYNAMIC_BASE = 5248336,
-    DYNAMICTOP_PTR = 5424;
+    STACK_MAX = 5248992,
+    DYNAMIC_BASE = 5248992,
+    DYNAMICTOP_PTR = 6080;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1913,7 +1913,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 4432;
+// STATICTOP = STATIC_BASE + 5088;
 /* global initializers */ /*__ATINIT__.push();*/
 
 
@@ -1924,7 +1924,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 5440
+var tempDoublePtr = 6096
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -5272,6 +5272,11 @@ function copyTempDouble(ptr) {
 
   function ___unlock() {}
 
+  function _clock() {
+      if (_clock.start === undefined) _clock.start = Date.now();
+      return ((Date.now() - _clock.start) * (1000000 / 1000))|0;
+    }
+
   function _emscripten_get_heap_size() {
       return HEAP8.length;
     }
@@ -5363,6 +5368,7 @@ var asmLibraryArg = {
   "___syscall54": ___syscall54,
   "___syscall6": ___syscall6,
   "___unlock": ___unlock,
+  "_clock": _clock,
   "_emscripten_get_heap_size": _emscripten_get_heap_size,
   "_emscripten_memcpy_big": _emscripten_memcpy_big,
   "_emscripten_resize_heap": _emscripten_resize_heap,
@@ -5444,6 +5450,30 @@ var _simLibInitialise = Module["_simLibInitialise"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_simLibInitialise"].apply(null, arguments)
+};
+
+var _simLibLcdCommand = Module["_simLibLcdCommand"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_simLibLcdCommand"].apply(null, arguments)
+};
+
+var _simLibLcdNumPixelsX = Module["_simLibLcdNumPixelsX"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_simLibLcdNumPixelsX"].apply(null, arguments)
+};
+
+var _simLibLcdNumPixelsY = Module["_simLibLcdNumPixelsY"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_simLibLcdNumPixelsY"].apply(null, arguments)
+};
+
+var _simLibLcdPixelState = Module["_simLibLcdPixelState"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_simLibLcdPixelState"].apply(null, arguments)
 };
 
 var _simLibLoadProgram = Module["_simLibLoadProgram"] = function() {

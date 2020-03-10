@@ -12,15 +12,19 @@
 
 #include "siminst.h"
 #include "computer.h"
+#include "lcd.h"
 #include <stdlib.h>
 
 static Computer* _c = NULL;
+static LCD* _lcd = NULL;
+static int lcdDirty = 0;
 
 SIDLLEXPORT void siInitialise()
 {
 	if (_c == NULL)
 	{
 		_c = newComputer();
+		_lcd = newLCD(16, 2);
 	}
 }
 
@@ -30,6 +34,8 @@ SIDLLEXPORT void siDestroy()
 	{
 		destroyComputer(_c);
 		_c = NULL;
+		destroyLCD(_lcd);
+		_lcd = NULL;
 	}
 }
 
@@ -123,5 +129,45 @@ SIDLLEXPORT unsigned siGetControlWord()
 		return _c->controlWord;
 	}
 	return 0;
-
 }
+
+SIDLLEXPORT void siLcdCommand(int rs, byte data)
+{
+	if (_lcd)
+	{
+		if (rs)
+		{
+			writeByte(_lcd, data);
+		}
+		else
+		{
+			sendCommand(_lcd, data);
+		}
+		lcdDirty = 1;
+	}
+}
+
+SIDLLEXPORT int siLcdNumPixelsX()
+{
+	int x = 0;
+	numPixels(_lcd, &x, NULL);
+	return x;
+}
+
+SIDLLEXPORT int siLcdNumPixelsY()
+{
+	int y = 0;
+	numPixels(_lcd, NULL, &y);
+	return y;
+}
+
+SIDLLEXPORT int siLcdPixelState(int x, int y)
+{
+	if (lcdDirty)
+	{
+		updatePixels(_lcd);
+		lcdDirty = 0;
+	}
+	return pixelState(_lcd, x, y);
+}
+

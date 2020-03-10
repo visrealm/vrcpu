@@ -13,11 +13,15 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <math.h>
+#include <time.h>
 
 #define CHAR_WIDTH  5
 #define CHAR_HEIGHT 8
 #define DATA_WIDTH 40
 #define DATA_HEIGHT 4
+
+static int rowOffsets[] = { 0x00, 0x40, 0x14, 0x54 };
+
 
 struct LCD_s
 {
@@ -25,7 +29,6 @@ struct LCD_s
 	int height;
 
 	byte entryModeFlags;
-	byte shiftFlags;
 	byte displayFlags;
 
 	char* data;
@@ -36,7 +39,31 @@ struct LCD_s
 	int pixelsWidth;
 	int pixelsHeight;
 	int numPixels;
+
+	byte cgram[8][8];
+	char* cgptr;
+
 };
+
+void increment(LCD* lcd)
+{
+	++lcd->ptr;
+	size_t offset = lcd->ptr - lcd->data;
+	if (offset >= (DATA_WIDTH) * lcd->height)
+	{
+		lcd->ptr = lcd->data;
+	}
+}
+
+void decrement(LCD* lcd)
+{
+	--lcd->ptr;
+	if (lcd->ptr < lcd->data)
+	{
+		lcd->ptr = lcd->data + (DATA_WIDTH * lcd->height) - 1;
+	}
+}
+
 
 
 DLLEXPORT LCD* newLCD(int width, int height)
@@ -53,13 +80,14 @@ DLLEXPORT LCD* newLCD(int width, int height)
 		lcd->data = (char*)malloc(datalen);
 		if (lcd->data != NULL)
 		{
-			memset(lcd->data, 0, datalen);
+			memset(lcd->data, ' ', datalen);
 		}
 		lcd->ptr = lcd->data;
-		lcd->entryModeFlags = 0;
-		lcd->shiftFlags = 0;
+		lcd->entryModeFlags = LCD_CMD_ENTRY_MODE_INCREMENT;
 		lcd->displayFlags = 0;
 		lcd->scrollOffset = 0;
+		memset(lcd->cgram, 0, sizeof(lcd->cgram));
+		lcd->cgptr = NULL;
 		lcd->pixelsWidth  = lcd->width * (CHAR_WIDTH + 1) - 1;
 		lcd->pixelsHeight = lcd->height * (CHAR_HEIGHT + 1) - 1;
 		lcd->numPixels = lcd->pixelsWidth * lcd->pixelsHeight;
@@ -95,14 +123,36 @@ DLLEXPORT void sendCommand(LCD* lcd, byte command)
 			offset = DATA_WIDTH * lcd->height - 1;
 		}
 		lcd->ptr = lcd->data + offset;
+		lcd->cgptr = NULL;
 	}
 	else if (command & LCD_CMD_SET_CGRAM_ADDR)
 	{
-
+		lcd->cgptr = (char*)lcd->cgram + (command & 0x3f);
 	}
 	else if (command & LCD_CMD_SHIFT)
 	{
-		lcd->shiftFlags = command;
+		if (command & LCD_CMD_SHIFT_DISPLAY)
+		{
+			if (command & LCD_CMD_SHIFT_RIGHT)
+			{
+				++lcd->scrollOffset;
+			}
+			else
+			{
+				--lcd->scrollOffset;
+			}
+		}
+		else
+		{
+			if (command & LCD_CMD_SHIFT_RIGHT)
+			{
+				increment(lcd);
+			}
+			else
+			{
+				decrement(lcd);
+			}
+		}
 	}
 	else if (command & LCD_CMD_DISPLAY)
 	{
@@ -115,62 +165,121 @@ DLLEXPORT void sendCommand(LCD* lcd, byte command)
 	else if (command & LCD_CMD_HOME)
 	{
 		lcd->ptr = lcd->data;
+lcd->scrollOffset = 0;
 	}
 	else if (command & LCD_CMD_CLEAR)
 	{
-		if (lcd->data != NULL)
+	if (lcd->data != NULL)
+	{
+		size_t datalen = ((size_t)DATA_WIDTH) * lcd->height;
+		memset(lcd->data, 0, datalen);
+	}
+	lcd->ptr = lcd->data;
+	}
+}
+
+
+void doShift(LCD* lcd)
+{
+	if (lcd->cgptr)
+	{
+		if (lcd->entryModeFlags & LCD_CMD_ENTRY_MODE_INCREMENT)
 		{
-			size_t datalen = ((size_t)lcd->width + 1) * lcd->height;
-			memset(lcd->data, 0, datalen);
+			++lcd->cgptr;
+			if (lcd->cgptr >= (char*)lcd->cgram + sizeof(lcd->cgram))
+			{
+				lcd->cgptr = (char*)lcd->cgram;
+			}
 		}
-		lcd->ptr = lcd->data;
+		else
+		{
+			--lcd->cgptr;
+			if (lcd->cgptr < (char*)lcd->cgram)
+			{
+				lcd->cgptr = (char*)lcd->cgram + sizeof(lcd->cgram) - 1;
+			}
+		}
 	}
-}
-
-void increment(LCD* lcd)
-{
-	++lcd->ptr;
-	size_t offset = lcd->ptr - lcd->data;
-	if ((offset + 1) % (DATA_WIDTH) == 0)
+	else
 	{
-		++lcd->ptr;
-	}
-	if (lcd->ptr >= lcd->data + (DATA_WIDTH) * lcd->height)
-	{
-		lcd->ptr = lcd->data;
-	}
-}
-
-void decrement(LCD* lcd)
-{
-	--lcd->ptr;
-	if (lcd->ptr < lcd->data)
-	{
-		lcd->ptr = lcd->data + (DATA_WIDTH * lcd->height) - 1;
+		if (lcd->entryModeFlags & LCD_CMD_ENTRY_MODE_SHIFT)
+		{
+			if (lcd->entryModeFlags & LCD_CMD_ENTRY_MODE_INCREMENT)
+			{
+				++lcd->scrollOffset;
+			}
+			else
+			{
+				--lcd->scrollOffset;
+			}
+		}
+		if (lcd->entryModeFlags & LCD_CMD_ENTRY_MODE_INCREMENT)
+		{
+			increment(lcd);
+		}
+		else
+		{
+			decrement(lcd);
+		}
 	}
 }
 
 DLLEXPORT void writeByte(LCD* lcd, byte data)
 {
-	*lcd->ptr = data;
-
-	if (lcd->shiftFlags & LCD_CMD_SHIFT_RIGHT)
+	if (lcd->cgptr)
 	{
-		if (lcd->shiftFlags & LCD_CMD_SHIFT_DISPLAY)
+		// go to starting byte for the current character
+		int row = (lcd->cgptr - (char*)lcd->cgram) % 8;
+		byte* startAddr = lcd->cgptr - row;
+
+		for (int i = 0; i < 5; ++i)
 		{
-			--lcd->scrollOffset;
+			byte bit = data & (0x10 >> i);
+			if (bit)
+			{
+				*(startAddr + i) |= (0x80 >> row);
+			}
+			else
+			{
+				*(startAddr + i) &= ~(0x80 >> row);
+			}
 		}
-		decrement(lcd);
 	}
 	else
 	{
-		if (lcd->shiftFlags & LCD_CMD_SHIFT_DISPLAY)
-		{
-			++lcd->scrollOffset;
-		}
-		increment(lcd);
+		*lcd->ptr = data;
 	}
+	doShift(lcd);
 }
+
+DLLEXPORT byte readByte(LCD* lcd)
+{
+	byte data = 0;
+
+	if (lcd->cgptr)
+	{
+		// go to starting byte for the current character
+		int row = (lcd->cgptr - (char*)lcd->cgram) % 8;
+		byte* startAddr = lcd->cgptr - row;
+
+		for (int i = 0; i < 5; ++i)
+		{
+			if (*(startAddr + i) & (0x80 >> row))
+			{
+				data |= (0x10 >> i);
+			}
+		}
+	}
+	else
+	{
+		data = *lcd->ptr;
+	}
+
+	doShift(lcd);
+
+	return data;
+}
+
 
 DLLEXPORT void writeString(LCD* lcd, const char* str)
 {
@@ -182,20 +291,20 @@ DLLEXPORT void writeString(LCD* lcd, const char* str)
 }
 
 
-DLLEXPORT byte readByte(LCD* lcd)
-{
-	return *lcd->ptr;
-}
-
 DLLEXPORT const char* readLine(LCD* lcd, int row)
 {
 	return lcd->data + (row * (lcd->width + 1));
 }
 
 static const byte lcd_font[128][CHAR_WIDTH];
-DLLEXPORT const byte* charBits(byte c)
+DLLEXPORT const byte* charBits(LCD *lcd, byte c)
 {
-	if (c < 128)
+	c %= 128;
+	if (c < 8)
+	{
+		return lcd->cgram[c];
+	}
+	else if (c < 128)
 	{
 		return lcd_font[c];
 	}
@@ -208,7 +317,6 @@ DLLEXPORT int getDataOffset(LCD* lcd, int row, int col)
 	if (col < 0)
 	{
 		offset = DATA_WIDTH + offset;
-		//printf("%d: %d\n", col, offset);
 	}
 	return (row * DATA_WIDTH) + offset;
 }
@@ -217,8 +325,17 @@ DLLEXPORT void updatePixels(LCD* lcd)
 {
 	char *pixel = lcd->pixels;
 
-	//printf("pixelsWidth: %d\n", lcd->pixelsWidth);
-	//printf("pixelsHeight: %d\n", lcd->pixelsHeight);
+	int cursorOn = 0;
+	if (lcd->displayFlags & LCD_CMD_DISPLAY_CURSOR_BLINK)
+	{
+		cursorOn = ((clock() / (CLOCKS_PER_SEC / 1000)) % 1000) < 500;
+	}
+	else if (lcd->displayFlags & LCD_CMD_DISPLAY_CURSOR)
+	{
+		cursorOn = 1;
+	}
+
+	int displayOn = lcd->displayFlags & LCD_CMD_DISPLAY_ON;
 
 	for (int row = 0; row < lcd->height; ++row)
 	{
@@ -228,16 +345,20 @@ DLLEXPORT void updatePixels(LCD* lcd)
 
 			int dataCol = col + lcd->scrollOffset;
 
-			char c = *(lcd->data + getDataOffset(lcd, row, dataCol));
+			char* ptr = lcd->data + getDataOffset(lcd, row, dataCol);
 
-			const byte* bits = charBits(c);
+			int drawCursor = cursorOn && (ptr == lcd->ptr);
+
+			char c = *ptr;
+
+			const byte* bits = charBits(lcd, c);
 
 			for (int y = 0; y < CHAR_HEIGHT; ++y)
 			{
 				pixel = charTopLeft + y * lcd->pixelsWidth;
 				for (int x = 0; x < CHAR_WIDTH; ++x)
 				{
-					*pixel = (bits[x] & (0x80 >> y)) ? 1 : 0;
+					*pixel = displayOn && ((drawCursor && y == CHAR_HEIGHT - 1) || (bits[x] & (0x80 >> y))) ? 1 : 0;
 					++pixel;
 				}
 			}
@@ -261,36 +382,36 @@ DLLEXPORT char pixelState(LCD* lcd, int x, int y)
 
 
 static const byte lcd_font[128][5] = {
-		{0x00, 0x00, 0x00, 0x00, 0x00}, //   0 - space
-		{0x7c, 0xa2, 0x8a, 0xa2, 0x7c}, //   1 - light smiley face
-		{0x7c, 0xd6, 0xf6, 0xd6, 0x7c}, //   2 - dark smiley face
-		{0x38, 0x7c, 0x3e, 0x7c, 0x38}, //   3 - full heart
-		{0x00, 0x38, 0x1c, 0x38, 0x00}, //   4 - small heart
-		{0x0c, 0x6c, 0xfe, 0x6c, 0x0c}, //   5 - club
-		{0x18, 0x3a, 0x7e, 0x3a, 0x18}, //   6 - spade
-		{0x00, 0x18, 0x18, 0x00, 0x00}, //   7 - bullet
-		{0xff, 0xe7, 0xe7, 0xff, 0xff}, //   8 - big rectangle
-		{0x3c, 0x24, 0x24, 0x3c, 0x00}, //   9 - small rectangle
-		{0xc3, 0xdb, 0xdb, 0xc3, 0xff}, //  10 - filled rectangle
-		{0x0c, 0x12, 0x52, 0x6c, 0x70}, //  11 - man symbol
-		{0x60, 0x94, 0x9e, 0x94, 0x60}, //  12 - woman symbol
-		{0x06, 0x0e, 0xfc, 0x40, 0x20}, //  13 - musical note
-		{0x06, 0x7e, 0x50, 0xac, 0xfc}, //  14 - double music note
-		{0x18, 0x24, 0x24, 0x24, 0x18}, //  15 - record
-		{0x00, 0xfe, 0x7c, 0x38, 0x10}, //  16 - play
-		{0x10, 0x38, 0x7c, 0xfe, 0x00}, //  17 - play backwards
-		{0x7e, 0x7e, 0x00, 0x7e, 0x7e}, //  18 - pause
-		{0x3c, 0x3c, 0x3c, 0x3c, 0x00}, //  19 - stop
-		{0x0a, 0x3a, 0xfa, 0x3a, 0x0a}, //  20 - eject
-		{0xfe, 0x7c, 0x38, 0x10, 0xfe}, //  21 - fwd
-		{0xfe, 0x10, 0x38, 0x7c, 0xfe}, //  22 - rev
-		{0x01, 0x01, 0x01, 0x01, 0x01}, //  23 - lower 1/8 block (full)
-		{0x03, 0x03, 0x03, 0x03, 0x03}, //  24 - lower 1/4 block (full)
-		{0x07, 0x07, 0x07, 0x07, 0x07}, //  25 - lower 3/8 block (full)
-		{0x0f, 0x0f, 0x0f, 0x0f, 0x0f}, //  26 - lower 1/2 block (full)
-		{0x1f, 0x1f, 0x1f, 0x1f, 0x1f}, //  27 - lower 5/8 block (full)
-		{0x3f, 0x3f, 0x3f, 0x3f, 0x3f}, //  28 - lower 3/4 block (full)
-		{0x7f, 0x7f, 0x7f, 0x7f, 0x7f}, //  29 - lower 7/8 block (full)
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
+		{0x00, 0x00, 0x00, 0x00, 0x00},
 		{0x00, 0x00, 0x00, 0x00, 0x00}, //  30
 		{0x00, 0x00, 0x00, 0x00, 0x00}, //  31
 		{0x00, 0x00, 0x00, 0x00, 0x00}, //  32 - space
