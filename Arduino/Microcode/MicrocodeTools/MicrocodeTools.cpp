@@ -22,24 +22,19 @@ int main()
   std::ofstream romFile("cpemu.data", std::ios::trunc);
 
   char buf[10];
-  for (int currentPage = 0; currentPage < NUM_PAGES; ++currentPage)
+  for (int address = 0; address < EepromAddress::TOTAL_BYTES; ++address)
   {
-    uint16_t pageStart = currentPage * PAGE_SIZE;
+    EepromAddress addr(address);
 
-    for (uint16_t offset = 0; offset < PAGE_SIZE; ++offset)
+    std::string desc = "<Unassigned>";
+
+    uint32_t controlWord = flipActiveLows(getControlWord(addr, desc));
+    snprintf(buf, sizeof(buf), "%08x", controlWord);
+    romFile << buf;
+
+    if (addr.flags() == 0 && addr.microtime() == 2)
     {
-      EepromAddress addr(pageStart + offset);
-
-      std::string desc = "<Unassigned>";
-
-      uint32_t controlWord = flipActiveLows(getControlWord(addr, desc));
-      snprintf(buf, sizeof(buf), "%08x", controlWord);
-      romFile << buf;
-
-      if (addr.flags() == 0 && addr.microtime() == 2)
-      {
-        printf("%03d: %s: %s\n", (int)addr.opcode(), addr.opcode().bitsToString().c_str(), desc.c_str());
-      }
+      printf("%03d: %s: %s\n", (int)addr.opcode(), addr.opcode().bitsToString().c_str(), desc.c_str());
     }
   }
 }

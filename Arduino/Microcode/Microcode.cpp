@@ -240,7 +240,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
     // load data from an immediate address to register
     if (dest != src)
     {
-      desc = opcode.describe() + " (load from immediate aaddress to " + dest.toString() + ")";
+      desc = opcode.describe() + " (" + dest.toString() + " = *Imm)";
       switch (address.microtime())
       {
         case STEP1: return _MAW | BW_PC;
@@ -262,7 +262,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
   else
   {
     // load data from address in src to register dest
-    desc = opcode.describe() + " (load from " + (src == Register::Rc() ? "PGM" : "") + " address in " + src.toString() + " to " + dest.toString() + ")";
+    desc = opcode.describe() + " (" + dest.toString() + " = " + (src == Register::Rc() ? "PGM*" : "*") + src.toString() + ")";
     switch (address.microtime())
     {
       case STEP1: return _MAW | src.writeToBus();
@@ -284,14 +284,14 @@ uint32_t getStoControlWord(const EepromAddress& address, std::string& desc)
     if (src == Register::Imm())
     {
       // push immediate
-      desc = "pushi";
+      desc = "pushi <= Imm";
       switch (address.microtime())
       {
-        case STEP1: return Register::StP().writeToBus() | _ALW | ALU_A_MINUS_B;
-        case STEP2: return _StPW | BW_ALU | _MAW;
-        case STEP3: return BW_MEM | Register::Rc().readFromBus();
-        case STEP4: return Register::PC().writeToBus() | _MAW;
-        case STEP5: return PCC | Register::Rc().writeToBus() | _MW;
+        case STEP1: return Register::PC().writeToBus() | _MAW;
+        case STEP2: return PCC | Register::Rc().readFromBus() | PGM | BW_MEM;
+        case STEP3: return Register::StP().writeToBus() | _ALW | ALU_A_MINUS_B;
+        case STEP4: return _StPW | BW_ALU | _MAW;
+        case STEP5: return _MW | Register::Rc().writeToBus();
       }
     }
     else if (src == Register::PC())
@@ -309,7 +309,7 @@ uint32_t getStoControlWord(const EepromAddress& address, std::string& desc)
     else
     {
       // push
-      desc = "push " + src.toString();
+      desc = "push <= " + src.toString();
       switch (address.microtime())
       {
         case STEP1: return Register::StP().writeToBus() | _ALW | ALU_A_MINUS_B;
@@ -336,10 +336,23 @@ uint32_t getStoControlWord(const EepromAddress& address, std::string& desc)
     }
     else
     {
-      // store value in src to immediate address
-      if (src != Register::Imm())
+      // store immediate value to immediate address
+      if (src == Register::Imm())
       {
-        desc = "stoi " + src.toString() + " (store value in " + src.toString() + " to immediate address)";
+        desc = "stoi (PGM*Imm2 = Imm1)";
+        switch (address.microtime())
+        {
+          case STEP1: return Register::PC().writeToBus() | _MAW;
+          case STEP2: return PCC | PGM | BW_MEM | _MAW | _ALW | ALU_A_PLUS_B; // store value in ALU
+          case STEP3: return Register::PC().writeToBus() | _MAW;
+          case STEP4: return PCC | PGM | BW_MEM | _MAW;
+          case STEP5: return _MW | PGM | BW_ALU;
+        }
+      }
+      // store value in src to immediate address
+      else
+      {
+        desc = "stoi " + src.toString() + " (*Imm = " + src.toString() + ")";
         switch (address.microtime())
         {
           case STEP1: return Register::PC().writeToBus() | _MAW;
@@ -358,7 +371,7 @@ uint32_t getStoControlWord(const EepromAddress& address, std::string& desc)
     }
     else
     {
-      desc = "pop " + dest.toString();
+      desc = "pop => " + dest.toString();
     }
 
     switch (address.microtime())
@@ -370,7 +383,7 @@ uint32_t getStoControlWord(const EepromAddress& address, std::string& desc)
   }
   else
   {
-    desc  = opcode.describe() + " (store value in " + src.toString() + " to " + (dest == Register::Rc() ? "PGM" : "") + " address in " + dest.toString() + ")";
+    desc  = opcode.describe() + " (" + (dest == Register::Rc() ? "PGM" : "") + "*" + dest.toString() + " = " + src.toString() + ")";
 
     // store value in src to address in dest
     switch (address.microtime())
@@ -384,7 +397,7 @@ uint32_t getStoControlWord(const EepromAddress& address, std::string& desc)
 
 uint32_t getAluControlWord(const EepromAddress& address, std::string& desc)
 {
-  AluOpcode opcode = *((AluOpcode*)&address.opcode());
+  AluOpcode &opcode((AluOpcode&)address.opcode());
   Register reg = opcode.aluReg();
   AluMode mode = opcode.aluMode();
 
@@ -423,40 +436,28 @@ uint32_t getAluControlWord(const EepromAddress& address, std::string& desc)
   }
   else if (opcode.useCarry())
   {
-    // tst
-    if (mode == AluMode::NOT_A())
+    // cmp Rb, reg
+    if (mode == AluMode::A_OR_B())
     {
-      desc = "tst " + reg.toString();
-      switch (address.microtime())
-      {
-        case STEP1: return reg.writeToBus() | ALU_A_PLUS_B | _ALW;
-      }
+      desc = "cmp Rb, " + reg.toString();
+
+      mode = AluMode::B_MINUS_A();
     }
-    else
+    // cmp reg, Rb
+    else if (mode == AluMode::A_AND_B())
     {
-      // cmp Rb, reg
-      if (mode == AluMode::A_OR_B())
-      {
-        desc = "cmp Rb, " + reg.toString();
+      desc = "cmp " + reg.toString() + ", Rb";
 
-        mode = AluMode::B_MINUS_A();
-      }
-      // cmp reg, Rb
-      else if (mode == AluMode::A_AND_B())
-      {
-        desc = "cmp " + reg.toString() + ", Rb";
+      mode = AluMode::A_MINUS_B();
+    }
+    else // not supported
+    {
+      return _TR;
+    }
 
-        mode = AluMode::A_MINUS_B();
-      }
-      else // not supported
-      {
-        return _TR;
-      }
-
-      switch (address.microtime())
-      {
-        case STEP1: return reg.writeToBus() | ALB | ALC | (mode << ALU_OFFSET) | _ALW;
-      }
+    switch (address.microtime())
+    {
+      case STEP1: return reg.writeToBus() | ALB | ALC | (mode << ALU_OFFSET) | _ALW;
     }
   }
   else

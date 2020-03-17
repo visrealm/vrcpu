@@ -34,6 +34,13 @@
 #define EEPROM_READ_EN A0 // active-low EEPROM read enable
 #define EEPROM_WRITE_EN 13 // active-low EEPROM write enable
 
+
+ // Required for page-write enabled EEPROMs
+ // What is the page size?
+#define PAGE_SIZE 128
+#define TOTAL_BYTES 1 << 15
+#define NUM_PAGES (TOTAL_BYTES / PAGE_SIZE)
+
 int ROM_NO = -1;
 EEPROM eeprom(EEPROM_D0, EEPROM_READ_EN, EEPROM_WRITE_EN, SHIFT_DATA, SHIFT_CLK, DFF_CLK);
 

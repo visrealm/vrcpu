@@ -23,13 +23,6 @@
   #include <string>
 #endif
 
-
- // Required for page-write enabled EEPROMs
- // What is the page size?
-#define PAGE_SIZE 128
-#define TOTAL_BYTES 32768
-#define NUM_PAGES (TOTAL_BYTES / PAGE_SIZE)
-
 // control word constants (eeprom outputs)
 // these define the purpose of each of the control word bits
 
@@ -192,10 +185,10 @@ class OpcodeGroup
     {
       switch (m_group)
       {
-        case MOV_BITS: return "MOV";
-        case LOD_BITS: return "LOD";
-        case STO_BITS: return "STO";
-        case ALU_BITS: return "ALU";
+        case MOV_BITS: return "mov";
+        case LOD_BITS: return "lod";
+        case STO_BITS: return "sto";
+        case ALU_BITS: return "alu";
       }
       return "Unknown";
     }
@@ -236,14 +229,14 @@ public:
   {
     switch (m_mode)
     {
-      case INC_A_BITS: return "CLEAR";
-      case B_MINUS_A_BITS: return "SUB_BA";
-      case A_MINUS_B_BITS: return "SUB_AB";
-      case A_PLUS_B_BITS: return "ADD";
-      case A_XOR_B_BITS: return "XOR";
-      case A_OR_B_BITS: return "OR";
-      case A_AND_B_BITS: return "AND";
-      case NOT_A_BITS: return "SET";
+      case INC_A_BITS: return "clear";
+      case B_MINUS_A_BITS: return "Rb sub";
+      case A_MINUS_B_BITS: return "sub Rb from";
+      case A_PLUS_B_BITS: return "add Rb";
+      case A_XOR_B_BITS: return "xor Rb";
+      case A_OR_B_BITS: return "or Rb";
+      case A_AND_B_BITS: return "and Rb";
+      case NOT_A_BITS: return "set";
     }
     return "Unknown";
   }
@@ -354,6 +347,7 @@ class AluOpcode : public Opcode
       UseCarry,
     };
 
+    AluOpcode(uint8_t opcode) : Opcode(opcode) {}
     AluOpcode(CarryFlag carryFlag,
               const AluMode& aluMode,
               const Register& reg)
@@ -372,10 +366,10 @@ class AluOpcode : public Opcode
     std::string describe() const override
     {
       std::string desc;
-      desc += group().toString() + " ";
-      desc += useCarry() ? "C " : "  ";
       desc += aluMode().toString() + " ";
       desc += aluReg().toString();
+      desc += useCarry() ? " with carry " : "";
+      desc += " => " + aluReg().toString();
       return desc;
     }
 
@@ -417,6 +411,8 @@ class EepromAddress
     static const uint8_t CarryFlag    = 1 << 2;
     static const uint8_t ZeroFlag     = 1 << 3;
 
+    static const uint16_t TOTAL_BYTES = 1 << 15;
+
     EepromAddress(uint16_t address) : m_address(address) {}
     EepromAddress(uint8_t flags, uint8_t microtime, const Opcode &opcode)
     : m_address(((flags << FlagsOffset) & FlagsMask) |
@@ -427,7 +423,21 @@ class EepromAddress
 
     uint8_t flags() const { return (m_address & FlagsMask) >> FlagsOffset; }
     uint8_t microtime() const { return (m_address & MicrotimeMask) >> MicrotimeOffset; }
-    Opcode opcode() const { return (m_address & OpcodeMask) >> OpcodeOffset; }
+    const Opcode &opcode() const
+    {
+      static Opcode oc(0);
+
+      oc = (m_address & OpcodeMask) >> OpcodeOffset;
+
+      if (oc.group() == OpcodeGroup::ALU())
+      {
+        static AluOpcode aluoc(0);
+        aluoc = (uint32_t)oc;
+        return aluoc;
+      }
+
+      return oc;
+    }
 
     bool isNegativeFlagSet() const { return m_address & (NegativeFlag << FlagsOffset); }
     bool isOverflowFlagSet() const { return m_address & (OverflowFlag << FlagsOffset); }
