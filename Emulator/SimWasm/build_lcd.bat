@@ -1,0 +1,1 @@
+emcc -o vrLCD.html -I ..\SimInst -I ..\SimLib -D _EMSCRIPTEN  vrLCDwasm.c ..\SimLib\lcd.c -s EXPORT_NAME="'vrLCDModule'" -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall','cwrap']"

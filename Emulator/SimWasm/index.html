@@ -1,26 +1,150 @@
 <html>
 	<body>
-		<p id="output" />
-		<script src="a.out.js"></script>
-		<script>
-			var Module = {
-				print: (function() {
-					var element = document.getElementById('output');
-					return function(text) {
-						element.innerHTML += text + "<br>";
-					};
-				})(),
-				printErr: function(text) {
-						if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-						if (0) {
-							dump(text + '\n');
-						}
-				},				
-				canvas: (function() {
-					var canvas = document.getElementById('canvas');
-					return canvas;
-				})()
-			};
-		</script>
+
+	<canvas id="canv" style="margin-top:10px;" width="100%" height="100%"></canvas>
+
+	<script>
+		var canv = document.getElementById('canv');
+		var ctx = canv.getContext('2d');
+			
+		window.addEventListener('resize', resizeCanvas, false);
+		window.addEventListener('focus', resizeCanvas, false);
+		
+		function resizeCanvas()
+		{
+			canv.width = window.innerWidth;
+			canv.height = window.innerHeight;
+		}
+		resizeCanvas();
+		
+	  const LCD_CMD_CLEAR = 0b00000001;
+      const LCD_CMD_HOME = 0b00000010;
+        
+      const LCD_CMD_ENTRY_MODE = 0b00000100;
+      const LCD_CMD_ENTRY_MODE_INCREMENT = 0b00000010;
+      const LCD_CMD_ENTRY_MODE_DECREMENT = 0b00000000;
+      const LCD_CMD_ENTRY_MODE_SHIFT = 0b00000001;
+       
+      const LCD_CMD_DISPLAY = 0b00001000;
+      const LCD_CMD_DISPLAY_ON = 0b00000100;
+      const LCD_CMD_DISPLAY_CURSOR = 0b00000010;
+      const LCD_CMD_DISPLAY_CURSOR_BLINK = 0b00000001;
+        
+      const LCD_CMD_SHIFT = 0b00010000;
+      const LCD_CMD_SHIFT_CURSOR = 0b00000000;
+      const LCD_CMD_SHIFT_DISPLAY = 0b00001000;
+      const LCD_CMD_SHIFT_LEFT = 0b00000000;
+      const LCD_CMD_SHIFT_RIGHT = 0b00000100;
+        
+      const LCD_CMD_SET_CGRAM_ADDR = 0b01000000;
+      const LCD_CMD_SET_DRAM_ADDR = 0b10000000;
+
+     // green/black
+      /*const LCD_BACK_COLOR      = "#7DBE00";
+      const LCD_PIXEL_OFF_COLOR = "#6FB900";
+      const LCD_PIXEL_ON_COLOR = "#061E00";*/
+      
+      // blue/white
+      const LCD_BACK_COLOR      = "#1f1fff7f";
+      const LCD_PIXEL_OFF_COLOR = "#0000e0ff";
+      const LCD_PIXEL_ON_COLOR  = "#f0f0ffff";
+      		
+    var getXPos = function (x)
+    {
+      return x;
+    }
+
+    var getYPos = function (y)
+    {
+      return y;
+    }
+
+    var getXSize = function (xs)
+    {
+      return xs;
+    }
+
+    var getYSize = function (ys)
+    {
+      return ys;
+    }
+
+			
+	
+		var vrLCDModule = {
+			preRun: [],
+			postRun: [],
+			print: null,
+			printErr: null,
+			onRuntimeInitialized: function ()
+			{
+			  vrLCD = {
+				newLCD: vrLCDModule.cwrap('newLCD', 'number', ['number','number']),
+				destroyLCD: vrLCDModule.cwrap('destroyLCD', null, ['number']),
+				sendCommand: vrLCDModule.cwrap('sendCommand', null, ['number','number']),
+				writeByte: vrLCDModule.cwrap('writeByte', null, ['number','number']),
+				writeString: vrLCDModule.cwrap('writeString', null, ['number','string']),
+				getDataOffset: vrLCDModule.cwrap('getDataOffset', 'number', ['number','number','number']),
+				readByte: vrLCDModule.cwrap('readByte', 'number', ['number']),
+				readLine: vrLCDModule.cwrap('readLine', 'string', ['number','number']),
+				charBits: vrLCDModule.cwrap('charBits', 'number', ['number','number']),
+				updatePixels: vrLCDModule.cwrap('updatePixels', null, ['number']),
+				numPixelsX: vrLCDModule.cwrap('numPixelsX', 'number', ['number']),
+				numPixelsY: vrLCDModule.cwrap('numPixelsY', 'number', ['number']),
+				pixelState: vrLCDModule.cwrap('pixelState', 'number', ['number','number','number']),
+			  };
+			  
+			  var lcd = vrLCD.newLCD(16, 2);
+			  vrLCD.sendCommand(lcd, LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON | LCD_CMD_DISPLAY_CURSOR_BLINK);
+			  
+			  var pixelsX = vrLCD.numPixelsX(lcd);
+			  var pixelsY = vrLCD.numPixelsY(lcd);			  
+			  
+			  
+			  var loop = function ()
+			  {
+				  vrLCD.sendCommand(lcd, LCD_CMD_CLEAR);
+				  
+				  var msg = "Hello, World!";
+				  vrLCD.writeString(lcd, msg);
+				  const lcdScale = getXSize(5);
+				  const lcdOffX = getXPos(200);
+				  const lcdOffY = getYPos(200);
+				  ctx.fillStyle = LCD_BACK_COLOR;
+				  ctx.fillRect(lcdOffX, lcdOffY, (pixelsX + getXSize(10)) * lcdScale, (pixelsY + getXSize(10)) * lcdScale);
+				  
+				  vrLCD.updatePixels(lcd);
+				  for (var y = 0; y < pixelsY; ++y)
+				  {
+					  for (var x= 0; x < pixelsX; ++x)
+					  {
+						var s = vrLCD.pixelState(lcd, x, y);
+						  switch (s)
+						  {
+							  case -1:
+								  continue;
+								  break;
+								  
+							  case 0:
+								  ctx.fillStyle = LCD_PIXEL_OFF_COLOR;
+								  break;
+							  
+							  case 1:
+								  ctx.fillStyle = LCD_PIXEL_ON_COLOR;
+								  break;
+									 
+						  }
+						  ctx.fillRect(lcdOffX + (x + lcdScale) * lcdScale, lcdOffY + (y + lcdScale) * lcdScale, lcdScale - getXSize(1), lcdScale - getXSize(1));
+					  }
+				  }
+   				  window.setTimeout(loop, 20);				  
+			    }				
+				
+				window.setTimeout(loop, 20);
+			  
+			}
+		};
+	</script>
+    <script src="vrLCD.js"></script>
 	</body>
 </html>

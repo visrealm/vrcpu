@@ -37,7 +37,7 @@ void printReg(const char *name, byte value)
 void outputLcd(LCD* lcd)
 {
 	static int hasOutput = 0;
-	if (hasOutput)
+	if (0 && hasOutput)
 	{
 		printf("%c[18A", 27);
 	}
@@ -67,8 +67,168 @@ void outputLcd(LCD* lcd)
 		free(line);
 	}
 }
+int main(int argc, char* argv[])
+{
+  char* portName = NULL;
 
-int main()
+  for (int i = 1; i < argc; ++i)
+  {
+    if (strncmp(argv[i], "-port", 6) == 0)
+    {
+      ++i;
+      if (i < argc)
+      {
+        portName = argv[i];
+      }
+    }
+  }
+
+  if (portName == NULL)
+  {
+    printf("Usage: simwin -port <PORTNAME>\n");
+    return 0;
+  }
+
+
+  HANDLE hComm;  // Handle to the Serial port
+  BOOL   Status; // Status
+  DCB dcbSerialParams = { 0 };  // Initializing DCB structure
+  COMMTIMEOUTS timeouts = { 0 };  //Initializing timeouts structure
+  char SerialBuffer[100] = { 0 }; //Buffer to send and receive data
+  DWORD BytesWritten = 0;          // No of bytes written to the port
+  DWORD dwEventMask;     // Event mask to trigger
+  char  ReadData;        //temperory Character
+  DWORD NoBytesRead;     // Bytes read by ReadFile()
+  unsigned char loop = 0;
+  wchar_t PortNo[40] = { 0 }; //contain friendly name
+  LCD* lcd = NULL;
+
+  swprintf_s(PortNo, 40, L"%s", portName);
+  //Open the serial com port
+  hComm = CreateFile(PortNo, //friendly name
+    GENERIC_READ | GENERIC_WRITE,      // Read/Write Access
+    0,                                 // No Sharing, ports cant be shared
+    NULL,                              // No Security
+    OPEN_EXISTING,                     // Open existing port only
+    0,                                 // Non Overlapped I/O
+    NULL);                             // Null for Comm Devices
+  if (hComm == INVALID_HANDLE_VALUE)
+  {
+    printf_s("\nPort %s can't be opened\n\n", portName);
+    goto Exit2;
+  }
+  //Setting the Parameters for the SerialPort
+  dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
+  Status = GetCommState(hComm, &dcbSerialParams); //retreives  the current settings
+  if (Status == FALSE)
+  {
+    printf_s("\nError to Get the Com state\n\n");
+    goto Exit1;
+  }
+  dcbSerialParams.BaudRate = CBR_115200;      //BaudRate = 9600
+  dcbSerialParams.ByteSize = 8;             //ByteSize = 8
+  dcbSerialParams.StopBits = ONESTOPBIT;    //StopBits = 1
+  dcbSerialParams.Parity = NOPARITY;      //Parity = None
+  Status = SetCommState(hComm, &dcbSerialParams);
+  if (Status == FALSE)
+  {
+    printf_s("\nError to Setting DCB Structure\n\n");
+    goto Exit1;
+  }
+  //Setting Timeouts
+  timeouts.ReadIntervalTimeout = 50;
+  timeouts.ReadTotalTimeoutConstant = 50;
+  timeouts.ReadTotalTimeoutMultiplier = 10;
+  timeouts.WriteTotalTimeoutConstant = 50;
+  timeouts.WriteTotalTimeoutMultiplier = 10;
+  if (SetCommTimeouts(hComm, &timeouts) == FALSE)
+  {
+    printf_s("\nError to Setting Time outs");
+    goto Exit1;
+  }
+
+  lcd = newLCD(16, 2);
+  sendCommand(lcd, LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON);// | LCD_CMD_DISPLAY_CURSOR_BLINK);
+  //sendCommand(lcd, LCD_CMD_ENTRY_MODE | LCD_CMD_ENTRY_MODE_SHIFT | LCD_CMD_ENTRY_MODE_INCREMENT);// | LCD_CMD_ENTRY_MODE_DECREMENT);
+
+  while (1)
+  {
+    char mode = 0;
+    unsigned int data = 0;
+
+    mode = 0;
+    data = 0;
+    printf_s("Mode (d/i/s/q): ");
+    scanf_s("%c", &mode);
+
+    if (mode == 'q')
+    {
+      break;
+    }
+    else if (mode == 'i')
+    {
+      printf_s("Data (hex): ");
+      scanf_s("%x", &data);
+      snprintf(SerialBuffer, sizeof(SerialBuffer), "%c %02x", mode, data);
+
+      sendCommand(lcd, data);
+    }
+    else if (mode == 'd')
+    {
+      printf_s("Data (hex): ");
+      scanf_s("%x", &data);
+      snprintf(SerialBuffer, sizeof(SerialBuffer), "%c %02x", mode, data);
+
+      writeByte(lcd, data);
+    }
+    else if (mode == 's')
+    {
+      char buffer[80];
+      printf_s("Text: ");
+      gets(buffer);
+      gets(buffer);
+      snprintf(SerialBuffer, sizeof(SerialBuffer), "%c %s", mode, buffer);
+
+      writeString(lcd, buffer);
+    }
+    else
+    {
+      printf("Invalid option: %c\n"
+        " i: instruction mode\n"
+        " d: data mode\n"
+        " s: send string\n"
+        " q: quit\n", mode);
+      continue;
+    }
+
+    outputLcd(lcd);
+
+    printf("%s\n", SerialBuffer);
+
+    //Writing data to Serial Port
+    Status = WriteFile(hComm,// Handle to the Serialport
+      SerialBuffer,            // Data to be written to the port
+      strlen(SerialBuffer) + 1,   // No of bytes to write into the port
+      &BytesWritten,  // No of bytes written to the port
+      NULL);
+    //print numbers of byte written to the serial port
+    printf_s("\nNumber of bytes written to the serial port = %d\n\n", BytesWritten);///BytesWritten);
+
+    if (Status == FALSE)
+    {
+      printf_s("\nFailed to write");
+      goto Exit1;
+    }
+  }
+Exit1:
+  CloseHandle(hComm);//Closing the Serial Port
+  if (lcd != NULL) destroyLCD(lcd);
+Exit2:
+  system("pause");
+  return 0;
+}
+
+int main2()
 {
 	LCD* lcd = newLCD(16, 2);
 	sendCommand(lcd, LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON | LCD_CMD_DISPLAY_CURSOR);

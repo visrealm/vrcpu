@@ -37,7 +37,7 @@
 #define LCD_CMD_SET_DRAM_ADDR          0b10000000
 
 struct LCD_s;
-typedef struct DLLEXPORT LCD_s LCD;
+typedef struct LCD_s LCD;
 
 DLLEXPORT LCD* newLCD(int width, int height);
 DLLEXPORT void destroyLCD(LCD* lcd);

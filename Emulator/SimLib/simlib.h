@@ -13,7 +13,8 @@
 #define _SIMLIB_H_
 
 #if _EMSCRIPTEN
-#define DLLEXPORT
+#include <emscripten.h>
+#define DLLEXPORT EMSCRIPTEN_KEEPALIVE
 #elif COMPILING_DLL
 #define DLLEXPORT __declspec(dllexport)
 #else
