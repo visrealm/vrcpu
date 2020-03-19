@@ -1,0 +1,3 @@
+[submodule "Emulator/vrEmuLcd"]
+	path = Emulator/vrEmuLcd
+	url = https://github.com/visrealm/vrEmuLcd
