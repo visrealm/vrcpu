@@ -39,8 +39,9 @@ DLLEXPORT Computer* newComputer()
 		c->ram = newRam(c->bus, c->mar, 256);
 		c->pgm = newRam(c->bus, c->mar, 256);
 
-		c->alu = newALU(c->bus, c->rb);
-		c->rom= newRomFromFile("rom.hex");
+    c->alu = newALU(c->bus, c->rb);
+    c->lcd = vrEmuLcdNew(16, 2, EmuLcdRomA00);
+    c->rom= newRomFromFile("rom.hex");
 
 		c->writingToBus = NULL;
 	}
@@ -60,8 +61,9 @@ DLLEXPORT void destroyComputer(Computer* c)
 	destroyRam(c->ram);
 	destroyRam(c->pgm);
 	destroyRegister(c->mar);
-	destroyALU(c->alu);
-	destroyBus(c->bus);
+  destroyALU(c->alu);
+  vrEmuLcdDestroy(c->lcd);
+  destroyBus(c->bus);
 	memset(c, sizeof(Computer), 0);
 	free(c);
 }
@@ -197,6 +199,17 @@ DLLEXPORT void computerTick(Computer* c, int high)
 		if (c->pgm->value->state == ReadFromBus)
 			ramTick(c->pgm);
 
+    if (c->controlWord & LCD)
+    {
+      if (c->controlWord & PGM)
+      {
+        vrEmuLcdSendCommand(c->lcd, c->bus->value);
+      }
+      else
+      {
+        vrEmuLcdWriteByte(c->lcd, c->bus->value);
+      }
+    }
 	}
 
 	++c->tick;

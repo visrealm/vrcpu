@@ -89,6 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;COMPILING_DLL;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../vrEmuLcd/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;COMPILING_DLL;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../vrEmuLcd/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,22 +129,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\vrEmuLcd\src\vrEmuLcd.h" />
     <ClInclude Include="alu.h" />
     <ClInclude Include="bus.h" />
     <ClInclude Include="computer.h" />
     <ClInclude Include="counter.h" />
-    <ClInclude Include="lcd.h" />
     <ClInclude Include="ram.h" />
     <ClInclude Include="register.h" />
     <ClInclude Include="rom.h" />
     <ClInclude Include="simlib.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\vrEmuLcd\src\vrEmuLcd.c" />
     <ClCompile Include="alu.c" />
     <ClCompile Include="bus.c" />
     <ClCompile Include="computer.c" />
     <ClCompile Include="counter.c" />
-    <ClCompile Include="lcd.c" />
     <ClCompile Include="ram.c" />
     <ClCompile Include="register.c" />
     <ClCompile Include="rom.c" />

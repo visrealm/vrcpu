@@ -39,7 +39,7 @@
     <ClInclude Include="rom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lcd.h">
+    <ClInclude Include="..\vrEmuLcd\src\vrEmuLcd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,7 +65,7 @@
     <ClCompile Include="rom.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lcd.c">
+    <ClCompile Include="..\vrEmuLcd\src\vrEmuLcd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

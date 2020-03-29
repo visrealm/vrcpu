@@ -17,6 +17,7 @@
 #include "ram.h"
 #include "rom.h"
 #include "alu.h"
+#include "vrEmuLcd.h"
 
 #define uint32_t unsigned
 
@@ -47,8 +48,7 @@
 #define _PCW ((uint32_t)1 << 18)
 #define _MAW ((uint32_t)1 << 19)
 
-// possible flip-flop??
-//#define RdH ((uint32_t)1 << 20) //Output in hex mode
+#define LCD ((uint32_t)1 << 20)
 //#define RdS ((uint32_t)1 << 21) //Output in signed mode
 
 #define _TR  ((uint32_t)1 << 22) // Reset microcode counter
@@ -73,6 +73,7 @@ typedef struct DLLEXPORT
 	Ram* ram;
 	Ram* pgm;
 	ALU* alu;
+  VrEmuLcd *lcd;
 
 	Rom* rom;
 	unsigned controlWord;
