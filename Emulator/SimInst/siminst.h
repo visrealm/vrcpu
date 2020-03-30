@@ -22,6 +22,8 @@
 
 #define byte unsigned char
 
+#include "vrEmuLcd.h"
+
 typedef enum SIDLLEXPORT
 {
 	Ra = 0,
@@ -51,6 +53,8 @@ SIDLLEXPORT void siSetClock(int high);
 SIDLLEXPORT void siReset();
 
 SIDLLEXPORT byte siGetValue(SIComponent component);
+
+SIDLLEXPORT VrEmuLcd* siGetLcd();
 
 SIDLLEXPORT unsigned siGetControlWord();
 

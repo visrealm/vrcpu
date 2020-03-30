@@ -116,6 +116,12 @@ SIDLLEXPORT byte siGetValue(SIComponent component)
 	}
 }
 
+SIDLLEXPORT VrEmuLcd* siGetLcd()
+{
+  return _c->lcd;
+}
+
+
 SIDLLEXPORT unsigned siGetControlWord()
 {
 	if (_c)
