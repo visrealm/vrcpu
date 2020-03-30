@@ -201,13 +201,13 @@ DLLEXPORT void computerTick(Computer* c, int high)
 
     if (c->controlWord & LCD)
     {
-      if (c->controlWord & PGM)
+      if (c->controlWord & LCD_DATA)
       {
-        vrEmuLcdSendCommand(c->lcd, c->bus->value);
+        vrEmuLcdWriteByte(c->lcd, c->bus->value);
       }
       else
       {
-        vrEmuLcdWriteByte(c->lcd, c->bus->value);
+        vrEmuLcdSendCommand(c->lcd, c->bus->value);
       }
     }
 	}

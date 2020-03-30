@@ -54,6 +54,10 @@
 #define _TR  ((uint32_t)1 << 22) // Reset microcode counter
 #define HLT ((uint32_t)1 << 23) /// Halt
 
+#define LCD_DATA PGM
+#define LCD_COMMAND 0
+
+
 #define ALS(S) ((uint32_t)S << 3)
 
 
