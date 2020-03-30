@@ -193,7 +193,7 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 261120, "filename": "/rom.hex"}], "remote_package_size": 261120, "package_uuid": "efb6e6c4-567c-4a03-81ad-5f15c8b1ebc2"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 262144, "filename": "/rom.hex"}], "remote_package_size": 262144, "package_uuid": "5f464232-4fed-469d-8d40-ff830469e200"});
 
 })();
 
@@ -1397,11 +1397,11 @@ function updateGlobalBufferAndViews(buf) {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 5456,
+    STACK_BASE = 7888,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5248336,
-    DYNAMIC_BASE = 5248336,
-    DYNAMICTOP_PTR = 5424;
+    STACK_MAX = 5250768,
+    DYNAMIC_BASE = 5250768,
+    DYNAMICTOP_PTR = 7856;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1913,7 +1913,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 4432;
+// STATICTOP = STATIC_BASE + 6864;
 /* global initializers */ /*__ATINIT__.push();*/
 
 
@@ -1924,7 +1924,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 5440
+var tempDoublePtr = 7872
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -5272,6 +5272,11 @@ function copyTempDouble(ptr) {
 
   function ___unlock() {}
 
+  function _clock() {
+      if (_clock.start === undefined) _clock.start = Date.now();
+      return ((Date.now() - _clock.start) * (1000000 / 1000))|0;
+    }
+
   function _emscripten_get_heap_size() {
       return HEAP8.length;
     }
@@ -5363,6 +5368,7 @@ var asmLibraryArg = {
   "___syscall54": ___syscall54,
   "___syscall6": ___syscall6,
   "___unlock": ___unlock,
+  "_clock": _clock,
   "_emscripten_get_heap_size": _emscripten_get_heap_size,
   "_emscripten_memcpy_big": _emscripten_memcpy_big,
   "_emscripten_resize_heap": _emscripten_resize_heap,
@@ -5434,6 +5440,12 @@ var _simLibGetControlWord = Module["_simLibGetControlWord"] = function() {
   return Module["asm"]["_simLibGetControlWord"].apply(null, arguments)
 };
 
+var _simLibGetLcd = Module["_simLibGetLcd"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_simLibGetLcd"].apply(null, arguments)
+};
+
 var _simLibGetValue = Module["_simLibGetValue"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
@@ -5462,6 +5474,84 @@ var _simLibSetClock = Module["_simLibSetClock"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_simLibSetClock"].apply(null, arguments)
+};
+
+var _vrEmuLcdCharBits = Module["_vrEmuLcdCharBits"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdCharBits"].apply(null, arguments)
+};
+
+var _vrEmuLcdDestroy = Module["_vrEmuLcdDestroy"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdDestroy"].apply(null, arguments)
+};
+
+var _vrEmuLcdGetDataOffset = Module["_vrEmuLcdGetDataOffset"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdGetDataOffset"].apply(null, arguments)
+};
+
+var _vrEmuLcdNew = Module["_vrEmuLcdNew"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdNew"].apply(null, arguments)
+};
+
+var _vrEmuLcdNumPixels = Module["_vrEmuLcdNumPixels"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdNumPixels"].apply(null, arguments)
+};
+
+var _vrEmuLcdNumPixelsX = Module["_vrEmuLcdNumPixelsX"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdNumPixelsX"].apply(null, arguments)
+};
+
+var _vrEmuLcdNumPixelsY = Module["_vrEmuLcdNumPixelsY"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdNumPixelsY"].apply(null, arguments)
+};
+
+var _vrEmuLcdPixelState = Module["_vrEmuLcdPixelState"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdPixelState"].apply(null, arguments)
+};
+
+var _vrEmuLcdReadByte = Module["_vrEmuLcdReadByte"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdReadByte"].apply(null, arguments)
+};
+
+var _vrEmuLcdSendCommand = Module["_vrEmuLcdSendCommand"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdSendCommand"].apply(null, arguments)
+};
+
+var _vrEmuLcdUpdatePixels = Module["_vrEmuLcdUpdatePixels"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdUpdatePixels"].apply(null, arguments)
+};
+
+var _vrEmuLcdWriteByte = Module["_vrEmuLcdWriteByte"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdWriteByte"].apply(null, arguments)
+};
+
+var _vrEmuLcdWriteString = Module["_vrEmuLcdWriteString"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdWriteString"].apply(null, arguments)
 };
 
 var establishStackSpace = Module["establishStackSpace"] = function() {

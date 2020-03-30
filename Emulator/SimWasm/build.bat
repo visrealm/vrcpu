@@ -1,1 +1,2 @@
-emcc -o cpemu.html -I ..\SimInst -I ..\SimLib -D _EMSCRIPTEN  simwasm.c ..\SimInst\siminst.c ..\SimLib\alu.c ..\SimLib\computer.c ..\SimLib\register.c ..\SimLib\ram.c ..\SimLib\rom.c ..\SimLib\counter.c ..\SimLib\bus.c -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']"  --preload-file rom.hex
+emcc -o cpemu.js -I ..\SimInst -I ..\SimLib -I ..\vrEmuLcd\src -D _EMSCRIPTEN  simwasm.c ..\SimInst\siminst.c ..\SimLib\alu.c ..\SimLib\computer.c ..\SimLib\register.c ..\SimLib\ram.c ..\SimLib\rom.c ..\SimLib\counter.c ..\SimLib\bus.c  ..\vrEmuLcd\src\vrEmuLcd.c -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']"  --preload-file rom.hex
+xcopy /D /Y cpemu.* ..\..\Web\emu

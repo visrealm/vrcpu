@@ -41,6 +41,12 @@ int simLibGetValue(SIComponent component)
 }
 
 EMSCRIPTEN_KEEPALIVE
+VrEmuLcd *simLibGetLcd()
+{
+  return siGetLcd();
+}
+
+EMSCRIPTEN_KEEPALIVE
 int simLibGetControlWord()
 {
 	return (int)siGetControlWord();
