@@ -89,15 +89,19 @@ Ported to CodeMirror by Peter Kroon
 }
 
 .cm-s-lesser-dark span.cm-def {
+  color: orange;
+}
+
+.cm-s-lesser-dark span.cm-def2 {
   color: greenyellow;
 }
 
-.cm-s-lesser-dark span.cm-variable {
+.cm-s-lesser-dark span.cm-var {
   color: #D9BF8C;
 }
 
-.cm-s-lesser-dark span.cm-variable-2 {
-  color: #669199;
+.cm-s-lesser-dark span.cm-var2 {
+  color: #ffff00;
 }
 
 .cm-s-lesser-dark span.cm-variable-3,
@@ -114,7 +118,7 @@ Ported to CodeMirror by Peter Kroon
 }
 
 .cm-s-lesser-dark span.cm-comment {
-  color: #666;
+  color: #888;
 }
 
 .cm-s-lesser-dark span.cm-string {

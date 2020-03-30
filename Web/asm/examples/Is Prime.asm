@@ -14,16 +14,15 @@ NUMBER = 57
 
     mov Rb, Rd
 	data Ra, #7
-	data Rc, .ls
 
 .lsr:	; right shift
-	call
+	call .ls
 	dec Ra
 	jnz .lsr
 	
 	inc Rb
 	jnn .next
-	data Rc, #128 ; remove high bit if present
+	data Rc, 0x80 ; remove high bit if present
 	sub Rb, Rc
 	mov Rb, Rc
 

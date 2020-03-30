@@ -15,11 +15,11 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
   var ez80 = parserConfig.ez80;
   var keywords1, keywords2;
   if (ez80) {
-    keywords1 = /^(exx?|(ld|cp)([di]r?)?|[lp]ea|mov|jmp|jc|jz|jnc|jnz|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|and|bit|[cs]cf|x?or|res|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|[de]i|halt|im|in([di]mr?|ir?|irx|2r?)|ot(dmr?|[id]rx|imr?)|out(0?|[di]r?|[di]2r?)|tst(io)?|slp)(\.([sl]?i)?[sl])?\b/i;
+    keywords1 = /^(exx?|(ld|cp)([di]r?)?|[lp]ea|cmp|mov|jmp|jc|jz|jnc|jnz|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|and|bit|[cs]cf|x?or|res|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|[de]i|halt|im|in([di]mr?|ir?|irx|2r?)|ot(dmr?|[id]rx|imr?)|out(0?|[di]r?|[di]2r?)|tst(io)?|slp)(\.([sl]?i)?[sl])?\b/i;
     keywords2 = /^(((call|j[pr]|rst|ret[in]?)(\.([sl]?i)?[sl])?)|(rs|st)mix)\b/i;
   } else {
-    keywords1 = /^(exx?|(ld|cp|in)([di]r?)?|mov|jmp|jc|jz|clr|clra|jnc|jnz|jnn|jno|jn|jo|peek|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|subc|addc|or|xor|tst|and|bit|[cs]cf|x?or|res|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|rst|[de]i|halt|im|ot[di]r|out[di]?)\b/i;
-    keywords2 = /^(call|j[pr]|ret[in]?|b_?(call|jump))\b/i;
+    keywords1 = /^(exx?|(ld|cp|in)([di]r?)?|cmp|mov|jmp|sto|lcc|lcd|lod|jmz|lsr|mv[abcd]|jc|jz|clr|clra|jnc|jnz|jnn|jno|jn|jo|peek|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|subc|addc|or|xor|tst|and|bit|[cs]cf|x?or|res|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|rst|[de]i|halt|im|ot[di]r|out[di]?)\b/i;
+    keywords2 = /^(call|j[pr]|ret[in]?|data|b_?(call|jump))\b/i;
   }
 
   var variables1 = /^(af?|bc?|c|de?|e|hl?|l|i[xy]?|r|sp|R[abcd])\b/i;
@@ -47,7 +47,8 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
           stream.eatWhile(/\w/);
         }
         w = stream.current();
-
+if (stream.eat(':')) {
+        return 'def2';}
         if (stream.indentation()) {
           if ((state.context == 1 || state.context == 4) && variables1.test(w)) {
             state.context = 4;
@@ -63,7 +64,7 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
             state.context = 1;
             return 'keyword';
           } else if (keywords2.test(w)) {
-            state.context = 2;
+            state.context = 1;
             return 'keyword2';
           } else if (state.context == 4 && numbers.test(w)) {
             return 'number';
@@ -76,6 +77,9 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
         } else {
           return null;
         }
+      } else if (stream.eat(':')) {
+        return 'def';
+          
       } else if (stream.eat(';')) {
         stream.skipToEnd();
         return 'comment';
@@ -91,11 +95,14 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
       } else if (stream.eat('\'')) {
         if (stream.match(/\\?.'/))
           return 'number';
-      } else if (stream.eat('.') || stream.sol() && stream.eat('#')) {
+      } else if (stream.eat('.') || stream.sol() && stream.eat('#') ) {
         state.context = 5;
 
         if (stream.eatWhile(/\w/))
           return 'def';
+      } else if(stream.eat(':')) {
+        state.context = 5;
+        return 'def';
       } else if (stream.eat('$')) {
         if (stream.eatWhile(/[\da-f]/i))
           return 'number';

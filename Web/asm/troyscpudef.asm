@@ -19,7 +19,7 @@
     nop                          -> 0b00 @ 0b000 @ 0b000
     hlt                          -> 0b00 @ 0b101 @ 0b101
     mov  {dest: reg}, {src: reg} -> 0b00 @ dest[2:0] @ src[2:0]
-    mov  {dest: reg}, #{value}    -> 0b00 @ dest[2:0] @ 0b111 @ value[7:0]
+    mov  {dest: reg}, {value}    -> 0b00 @ dest[2:0] @ 0b111 @ value[7:0]
     mva  {src: reg}              -> 0b00 @ 0b000 @ src[2:0]
     mvb  {src: reg}              -> 0b00 @ 0b001 @ src[2:0]
     mvc  {src: reg}              -> 0b00 @ 0b010 @ src[2:0]
@@ -31,12 +31,10 @@
     mvd  #{value}                -> 0b00 @ 0b011 @ 0b111 @ value[7:0]
     acc  #{value}                -> 0b00 @ 0b110 @ 0b111 @ value[7:0]
                 
-    data {dest: reg}, #{value}   -> 0b00 @ dest[2:0] @ 0b111 @ value[7:0]
-    data {dest: reg}, {addr}     -> 0b00 @ dest[2:0] @ 0b111 @ addr[7:0]
+    data {dest: reg}, {value}    -> 0b00 @ dest[2:0] @ 0b111 @ value[7:0]
     jmp  {addr}                  -> 0b00 @ 0b101 @ 0b111 @ addr[7:0]
     jmp  {src: reg}              -> 0b00 @ 0b101 @ src[2:0]
-    jmz                          -> 0b00 @ 0b110 @ 0b101
-            
+
     jc   {addr}                  -> 0b00 @ 0b111 @ 0b000 @ addr[7:0]
     jz   {addr}                  -> 0b00 @ 0b111 @ 0b001 @ addr[7:0]
     jo   {addr}                  -> 0b00 @ 0b111 @ 0b010 @ addr[7:0]
@@ -48,13 +46,14 @@
     jnn  {addr}                  -> 0b00 @ 0b111 @ 0b011 @ addr[7:0]
                                 
     lod  {dest: reg}, {src: reg} -> 0b01 @ dest[2:0] @ src[2:0]
-    lod  {dest: reg}, {value}    -> 0b01 @ dest[2:0] @ 0b111 @ value[7:0]
+    lod  {dest: reg}, {addr}     -> 0b01 @ dest[2:0] @ 0b111 @ addr[7:0]
 
-    sto  {dest: reg}, {src: reg} -> 0b10 @ dest[2:0] @ src[2:0]
-    sto  {value}, {src: reg}     -> 0b10 @ 0b111 @ src[2:0] @ value[7:0]
+    sto  {dest: reg},  {src: reg} -> 0b10 @ dest[2:0] @ src[2:0]
+    sto  {dest: reg},  {addr}     -> 0b10 @ 0b111 @ dest[2:0] @ addr[7:0]
+    sto  {addr}, {value}          -> 0b10 @ 0b111 @ 0b111 @ value[7:0] @ addr[7:0]
 
     push {src: reg}              -> 0b10 @ 0b110 @ src[2:0]
-    push #{value}                -> 0b10 @ 0b110 @ 0b111 @ value[7:0]
+    push {value}                 -> 0b10 @ 0b110 @ 0b111 @ value[7:0]
     pop  {dest: reg}             -> 0b01 @ dest[2:0] @ 0b110
     pop  {addr}                  -> 0b01 @ 0b111 @ 0b110 @ addr[7:0]
     peek{dest: reg}             -> 0b01 @ 0b110 @ dest[2:0]
@@ -64,8 +63,9 @@
     call {addr}                  -> 0b10 @ 0b111 @ 0b101 @ addr[7:0]; Call address (trashes #Rc)
     ret                          -> 0b01 @ 0b101 @ 0b110
 
-    clr  {dest: reg}             -> 0b00 @ 0b110 @ dest[2:0]
+    clr  {dest: reg}             -> 0b01 @ 0b111 @ dest[2:0]
     clra                         -> 0b00 @ 0b110 @ 0b111
+    jmz                          -> 0b01 @ 0b111 @ 0b101 ; clr PC
 
     inc  {dest: reg}             -> 0b110 @ 0b000 @ dest[1:0]
     dec  {dest: reg}             -> 0b111 @ 0b000 @ dest[1:0]
@@ -100,5 +100,35 @@
     lcd  {src: reg}              -> 0b111 @ 0b111 @ src[1:0]
 
 }
+
+LCD_CMD_CLEAR                = 0b00000001
+LCD_CMD_HOME                 = 0b00000010
+
+LCD_CMD_ENTRY_MODE           = 0b00000100
+LCD_CMD_ENTRY_MODE_INCREMENT = 0b00000010
+LCD_CMD_ENTRY_MODE_DECREMENT = 0b00000000
+LCD_CMD_ENTRY_MODE_SHIFT     = 0b00000001
+
+LCD_CMD_DISPLAY              = 0b00001000
+LCD_CMD_DISPLAY_ON           = 0b00000100
+LCD_CMD_DISPLAY_CURSOR       = 0b00000010
+LCD_CMD_DISPLAY_CURSOR_BLINK = 0b00000001
+
+LCD_CMD_SHIFT                = 0b00010000
+LCD_CMD_SHIFT_CURSOR         = 0b00000000
+LCD_CMD_SHIFT_DISPLAY        = 0b00001000
+LCD_CMD_SHIFT_LEFT           = 0b00000000
+LCD_CMD_SHIFT_RIGHT          = 0b00000100
+
+LCD_CMD_SET_CGRAM_ADDR       = 0b01000000
+LCD_CMD_SET_DRAM_ADDR        = 0b10000000
+
+LCD_CMD_FUNCTIONSET = 0x20
+LCD_CMD_8BITMODE    = 0x10
+LCD_CMD_2LINE       = 0x08
+
+LCD_INITIALIZE      = LCD_CMD_FUNCTIONSET | LCD_CMD_8BITMODE | LCD_CMD_2LINE
+
+
 
 #addr 0x000
