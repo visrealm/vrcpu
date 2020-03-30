@@ -378,8 +378,6 @@
       simLib.initialise();
 
       lcd = vrEmuLcd.registerLcd(simLib.getLcd());
-      lcd.sendCommand(LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON | LCD_CMD_DISPLAY_CURSOR | LCD_CMD_DISPLAY_CURSOR_BLINK);
-      lcd.sendCommand(LCD_CMD_CLEAR);
 
       var programHex = getParam("h");
       if (!programHex) 
