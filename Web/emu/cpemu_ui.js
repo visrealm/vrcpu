@@ -712,7 +712,7 @@
           ctx.drawImage(lcdimg, getXPos(215), getYPos(550), getXSize(292), getYSize(126));
           
         }
-        window.setTimeout(loop, 0);//200 / (speed <= 0 ? 1 : speed));
+        window.setTimeout(loop, 200 / (speed <= 0 ? 1 : speed));
       };
 
       loop();
