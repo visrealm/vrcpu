@@ -19,7 +19,7 @@
 
 int main()
 {
-  std::ofstream romFile("cpemu.data", std::ios::trunc);
+  std::ofstream romFile("../../../Emulator/SimWasm/rom.hex", std::ios::trunc);
 
   char buf[10];
   for (int address = 0; address < EepromAddress::TOTAL_BYTES; ++address)

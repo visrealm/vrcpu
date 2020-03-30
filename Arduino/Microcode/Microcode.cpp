@@ -161,7 +161,17 @@ uint32_t getMovControlWord(const EepromAddress& address, std::string& desc)
   }
   else if (dest == Register::Acc())
   {
-    if (src != dest)
+    if (src == Register::PC())
+    {
+      desc = "jmz";
+      switch (address.microtime())
+      {
+        // set pc to 0
+        case STEP1: return Register::PC().writeToBus() | ALU_A_AND_B | _ALW;
+        case STEP2: return Register::Acc().writeToBus() | Register::PC().readFromBus();
+      }
+    }
+    else if (src != dest)
     {
       desc = "tst " + src.toString();
       switch (address.microtime())
@@ -228,7 +238,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
         case STEP1: return _MAW | BW_PC;
         case STEP2: return PCC | BW_MEM | PGM | _MAW;
         case STEP3: return BW_MEM | _ALW | ALU_A_PLUS_B;
-        case STEP4: return PGM | LCD | Register::Acc().writeToBus();
+        case STEP4: return LCD_COMMAND | LCD | Register::Acc().writeToBus();
       }
     }
     else if (src == Register::PC()) // mem to lcd data
@@ -239,7 +249,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
         case STEP1: return _MAW | BW_PC;
         case STEP2: return PCC | BW_MEM | PGM | _MAW;
         case STEP3: return BW_MEM | _ALW | ALU_A_PLUS_B;
-        case STEP4: return LCD | Register::Acc().writeToBus();
+        case STEP4: return LCD_DATA | LCD | Register::Acc().writeToBus();
       }
     }
     else if (src == Register::StPi()) // pgm mem to lcd command
@@ -250,7 +260,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
         case STEP1: return _MAW | BW_PC;
         case STEP2: return PCC | BW_MEM | PGM | _MAW;
         case STEP3: return BW_MEM | PGM | _ALW | ALU_A_PLUS_B;
-        case STEP4: return PGM | LCD | Register::Acc().writeToBus();
+        case STEP4: return LCD_COMMAND | LCD | Register::Acc().writeToBus();
       }
     }
     else if (src == Register::Imm()) // pgm mem to lcd command
@@ -261,7 +271,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
         case STEP1: return _MAW | BW_PC;
         case STEP2: return PCC | BW_MEM | PGM | _MAW;
         case STEP3: return BW_MEM | PGM | _ALW | ALU_A_PLUS_B;
-        case STEP4: return LCD | Register::Acc().writeToBus();
+        case STEP4: return LCD_DATA | LCD | Register::Acc().writeToBus();
       }
     }
   }
@@ -285,7 +295,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
       {
         case STEP1: return _MAW | BW_PC; 
         case STEP2: return PCC | BW_MEM | PGM | _ALW | ALU_A_PLUS_B;
-        case STEP3: return PGM | LCD | Register::Acc().writeToBus();
+        case STEP3: return LCD_COMMAND | LCD | Register::Acc().writeToBus();
       }
     }
   }
@@ -309,7 +319,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
       {
         case STEP1: return _MAW | BW_PC;
         case STEP2: return PCC | BW_MEM | PGM | _ALW | ALU_A_PLUS_B;
-        case STEP3: return LCD | Register::Acc().writeToBus();
+        case STEP3: return LCD_DATA | LCD | Register::Acc().writeToBus();
       }
     }
   }
@@ -519,7 +529,7 @@ uint32_t getAluControlWord(const EepromAddress& address, std::string& desc)
       desc = "lcc " + reg.toString();
       switch (address.microtime())
       {
-        case STEP1: return PGM | LCD | reg.writeToBus();
+        case STEP1: return LCD_COMMAND | LCD | reg.writeToBus();
       }
     }
     else if (mode == AluMode::NOT_A()) // lcd data
@@ -527,7 +537,7 @@ uint32_t getAluControlWord(const EepromAddress& address, std::string& desc)
       desc = "lcd " + reg.toString();
       switch (address.microtime())
       {
-        case STEP1: return LCD | reg.writeToBus();
+        case STEP1: return LCD_DATA | LCD | reg.writeToBus();
       }
     }
 

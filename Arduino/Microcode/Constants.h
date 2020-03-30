@@ -43,35 +43,39 @@ static const uint32_t BW_ALU = 0b000;
 // inputs: 'A' from the bus. 'B' can be either Rb or 0 depending
 // on the ALB flag being set
 static const uint32_t ALU_OFFSET    = 3;
-static const uint32_t ALU_INC_A     = 0b000 << ALU_OFFSET; // clear (set all 0's)
-static const uint32_t ALU_B_MINUS_A = 0b001 << ALU_OFFSET;
-static const uint32_t ALU_A_MINUS_B = 0b010 << ALU_OFFSET;
-static const uint32_t ALU_A_PLUS_B  = 0b011 << ALU_OFFSET;
-static const uint32_t ALU_A_XOR_B   = 0b100 << ALU_OFFSET;
-static const uint32_t ALU_A_OR_B    = 0b101 << ALU_OFFSET;
-static const uint32_t ALU_A_AND_B   = 0b110 << ALU_OFFSET;
-static const uint32_t ALU_NOT_A     = 0b111 << ALU_OFFSET; // preset (set all 1's)
+static const uint32_t ALU_INC_A     = (uint32_t)0b000 << ALU_OFFSET; // clear (set all 0's)
+static const uint32_t ALU_B_MINUS_A = (uint32_t)0b001 << ALU_OFFSET;
+static const uint32_t ALU_A_MINUS_B = (uint32_t)0b010 << ALU_OFFSET;
+static const uint32_t ALU_A_PLUS_B  = (uint32_t)0b011 << ALU_OFFSET;
+static const uint32_t ALU_A_XOR_B   = (uint32_t)0b100 << ALU_OFFSET;
+static const uint32_t ALU_A_OR_B    = (uint32_t)0b101 << ALU_OFFSET;
+static const uint32_t ALU_A_AND_B   = (uint32_t)0b110 << ALU_OFFSET;
+static const uint32_t ALU_NOT_A     = (uint32_t)0b111 << ALU_OFFSET; // preset (set all 1's)
 
 // other control word bits
 // names starting with an underscore are active low
-static const uint32_t  ALB  = 1 << 6;  // if set, ALU to use Rb as second input, otherwise use 0
-static const uint32_t  ALC  = 1 << 7;  // set carry in for the ALU
-static const uint32_t _ALW  = 1 << 8;  // (active low) accept result into ALU register and flags from ALU
-static const uint32_t _RdW  = 1 << 9;  // (active low) write to register D
-static const uint32_t _RcW  = 1 << 10; // (active low) write to register C
-static const uint32_t _RbW  = 1 << 11; // (active low) write to register B
-static const uint32_t _RaW  = 1 << 12; // (active low) write to register A
-static const uint32_t _StPW = 1 << 13; // (active low) write to stack pointer
-static const uint32_t _MW   = 1 << 14; // (active low) write to memory data
-static const uint32_t  PGM  = 1 << 15; // program memory enable
-static const uint32_t _IRW  = 1 << 16; // (active low) write to instruction register
-static const uint32_t  PCC  = 1 << 17; // increment program counter
-static const uint32_t _PCW  = 1 << 18; // (active low) write to program counter
-static const uint32_t _MAW  = 1 << 19; // (active low) write to memory address register
-static const uint32_t LCD   = 1 << 20; // lcd write
-static const uint32_t TBD21 = 1 << 21; // (unused) tbd
-static const uint32_t _TR   = 1 << 22; // (active low) reset microcode counter (next instruction)
-static const uint32_t  HLT  = 1 << 23; // halt
+static const uint32_t  ALB  = (uint32_t)1 << 6;  // if set, ALU to use Rb as second input, otherwise use 0
+static const uint32_t  ALC  = (uint32_t)1 << 7;  // set carry in for the ALU
+static const uint32_t _ALW  = (uint32_t)1 << 8;  // (active low) accept result into ALU register and flags from ALU
+static const uint32_t _RdW  = (uint32_t)1 << 9;  // (active low) write to register D
+static const uint32_t _RcW  = (uint32_t)1 << 10; // (active low) write to register C
+static const uint32_t _RbW  = (uint32_t)1 << 11; // (active low) write to register B
+static const uint32_t _RaW  = (uint32_t)1 << 12; // (active low) write to register A
+static const uint32_t _StPW = (uint32_t)1 << 13; // (active low) write to stack pointer
+static const uint32_t _MW   = (uint32_t)1 << 14; // (active low) write to memory data
+static const uint32_t  PGM  = (uint32_t)1 << 15; // program memory enable
+static const uint32_t _IRW  = (uint32_t)1 << 16; // (active low) write to instruction register
+static const uint32_t  PCC  = (uint32_t)1 << 17; // increment program counter
+static const uint32_t _PCW  = (uint32_t)1 << 18; // (active low) write to program counter
+static const uint32_t _MAW  = (uint32_t)1 << 19; // (active low) write to memory address register
+static const uint32_t LCD   = (uint32_t)1 << 20; // lcd write
+static const uint32_t TBD21 = (uint32_t)1 << 21; // (unused) tbd
+static const uint32_t _TR   = (uint32_t)1 << 22; // (active low) reset microcode counter (next instruction)
+static const uint32_t  HLT  = (uint32_t)1 << 23; // halt
+
+static const uint32_t  LCD_DATA    = PGM; // same pin as PGM
+static const uint32_t  LCD_COMMAND = 0;
+
 
 static const uint32_t ACTIVE_LOW_FLAGS = (_ALW | _StPW | _PCW | _RaW | _RbW | _RcW | _RdW | _MAW | _IRW | _MW | _TR);
 
@@ -336,7 +340,7 @@ class AluOpcode : public Opcode
   static const uint8_t AluModeOffset = 2;
   static const uint8_t RegOffset     = 0;
 
-  static const uint8_t CarryMask     = 1 << CarryOffset;
+  static const uint8_t CarryMask     = (uint32_t)1 << CarryOffset;
   static const uint8_t AluModeMask   = AluMode::Mask << AluModeOffset;
   static const uint8_t RegMask       = Register::MinorMask << RegOffset;
 
@@ -402,16 +406,16 @@ class EepromAddress
     static const uint8_t FlagsOffset     = 11;
 
     static const uint16_t OpcodeMask    = Opcode::Mask << OpcodeOffset;
-    static const uint16_t MicrotimeMask = 0x7  << MicrotimeOffset;
-    static const uint16_t FlagsMask     = 0xf  << FlagsOffset;
+    static const uint16_t MicrotimeMask = (uint16_t)0x7  << MicrotimeOffset;
+    static const uint16_t FlagsMask     = (uint16_t)0xf  << FlagsOffset;
 
   public:
-    static const uint8_t NegativeFlag = 1 << 0;
-    static const uint8_t OverflowFlag = 1 << 1;
-    static const uint8_t CarryFlag    = 1 << 2;
-    static const uint8_t ZeroFlag     = 1 << 3;
+    static const uint8_t NegativeFlag = (uint8_t)1 << 0;
+    static const uint8_t OverflowFlag = (uint8_t)1 << 1;
+    static const uint8_t CarryFlag    = (uint8_t)1 << 2;
+    static const uint8_t ZeroFlag     = (uint8_t)1 << 3;
 
-    static const uint16_t TOTAL_BYTES = 1 << 15;
+    static const uint16_t TOTAL_BYTES = (uint16_t)1 << 15;
 
     EepromAddress(uint16_t address) : m_address(address) {}
     EepromAddress(uint8_t flags, uint8_t microtime, const Opcode &opcode)

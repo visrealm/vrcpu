@@ -38,7 +38,7 @@
  // Required for page-write enabled EEPROMs
  // What is the page size?
 #define PAGE_SIZE 128
-#define TOTAL_BYTES 1 << 15
+#define TOTAL_BYTES (32768)
 #define NUM_PAGES (TOTAL_BYTES / PAGE_SIZE)
 
 int ROM_NO = -1;
@@ -60,7 +60,11 @@ bool validatePage(int page)
   {
     EepromAddress addr(pageStart + offset);
     uint32_t controlWord = flipActiveLows(getControlWord(addr, desc));
-    uint8_t romByte = (controlWord >> ROM_NO * 8) & 0xff;
+    uint8_t romByte = (controlWord >> (ROM_NO * 8)) & 0xff;
+
+    //Serial.print(addr.microtime());
+    //Serial.print(desc + ": ");
+    //Serial.println(romByte, BIN);
 
     if (eeprom.read(addr) != romByte) 
     {
@@ -112,10 +116,12 @@ void loop() {
   Serial.print("Programming EEPROM #");
   Serial.println(ROM_NO);
 
-  Serial.print("Pages: ");
-  Serial.println(NUM_PAGES);
+  int numPages = NUM_PAGES;
 
-  for (int currentPage = 0; currentPage < NUM_PAGES; ++currentPage)
+  Serial.print("Pages: ");
+  Serial.println(numPages);
+
+  for (int currentPage = 0; currentPage < numPages; ++currentPage)
   {
     if (currentPage > 0 && (currentPage % 64) == 0)
     {
@@ -131,25 +137,35 @@ void loop() {
     }
     else
     {
-      // write page
-      for (uint16_t offset = 0; offset < PAGE_SIZE; ++offset)
+      int attempts = 0;
+      while (true)
       {
-        String desc;
-        EepromAddress addr(pageStart + offset);
-        uint32_t controlWord = flipActiveLows(getControlWord(addr, desc));
-        uint8_t romByte = (controlWord >> (ROM_NO * 8)) & 0xff;
-  
-        eeprom.write(addr, romByte);
-      }
-      eeprom.endWrite();
+        // write page
+        for (uint16_t offset = 0; offset < PAGE_SIZE; ++offset)
+        {
+          String desc;
+          EepromAddress addr(pageStart + offset);
+          uint32_t controlWord = flipActiveLows(getControlWord(addr, desc));
+          uint8_t romByte = (controlWord >> (ROM_NO * 8)) & 0xff;
 
-      if (validatePage(currentPage))
-      {
-        Serial.print('o');
-      }
-      else
-      {
-        Serial.print("X");
+          eeprom.write(addr, romByte);
+        }
+        eeprom.endWrite();
+  
+        if (validatePage(currentPage))
+        {
+          Serial.print('o');
+          break;
+        }
+        else
+        {
+          ++attempts;
+          if (attempts > 5)
+          {
+            Serial.print("X");
+            break;
+          }
+        }
       }
     }
   }
