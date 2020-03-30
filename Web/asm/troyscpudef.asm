@@ -92,7 +92,13 @@
     cmp  Rb, {dest: reg}         -> 0b111 @ 0b101 @ dest[1:0]
     cmp  {dest: reg}, Rb         -> 0b111 @ 0b100 @ dest[1:0]
     cmp  {dest: reg}             -> 0b111 @ 0b100 @ dest[1:0]
-    tst  {src: reg}              -> 0b111 @ 0b111 @ src[1:0]
+    tst  {src: reg}              -> 0b00 @ 0b110 @ src[2:0]
+
+    lcc #{imm}                   -> 0b01 @ 0b111 @ 0b110 @ imm[7:0]
+    lcd #{imm}                   -> 0b01 @ 0b111 @ 0b111 @ imm[7:0]
+    lcc  {src: reg}              -> 0b111 @ 0b100 @ src[1:0]
+    lcd  {src: reg}              -> 0b111 @ 0b111 @ src[1:0]
+
 }
 
 #addr 0x000

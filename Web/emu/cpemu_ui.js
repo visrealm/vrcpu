@@ -38,6 +38,7 @@
     var canv = document.getElementById('canv'),
       ctx = canv.getContext('2d');
     var img = document.getElementById("img_cpu_base");
+    var lcdimg = document.getElementById("img_lcd1602");
     var glow_red = document.getElementById("img_red_glow");
     var on_red = document.getElementById("img_red_on");
     var glow_yellow = document.getElementById("img_yellow_glow");
@@ -352,28 +353,13 @@
       BU: 12,
     };
 
-    var Module = {
-      preRun: [],
-      postRun: [],
-      print: null,
-      printErr: null,
-    setStatus: function (text)
-    {
-      if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-      if (text === Module.setStatus.last.text) return;
-      var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-      var now = Date.now();
-      if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-      Module.setStatus.last.time = now;
-      Module.setStatus.last.text = text;
-    },
-    totalDependencies: 0,
-      monitorRunDependencies: function (left)
-    {
-      this.totalDependencies = Math.max(this.totalDependencies, left);
-      Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-    },
-    onRuntimeInitialized: function ()
+    lcdModuleBackup = vrEmuLcdModule;
+
+    Module = {};
+
+    vrEmuLcdModule = Module;
+
+    Module.onRuntimeInitialized = function ()
     {
 
       simLib = {
@@ -383,10 +369,17 @@
         setClock: Module.cwrap('simLibSetClock', null, ['number']),
         reset: Module.cwrap('simLibReset', null),
         getValue: Module.cwrap('simLibGetValue', 'number', ['number']),
+        getLcd: Module.cwrap('simLibGetLcd', 'number'),
         getControlWord: Module.cwrap('simLibGetControlWord', 'number'),
       };
 
+      lcdModuleBackup.onRuntimeInitialized();
+
       simLib.initialise();
+
+      lcd = vrEmuLcd.registerLcd(simLib.getLcd());
+      lcd.sendCommand(LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON | LCD_CMD_DISPLAY_CURSOR | LCD_CMD_DISPLAY_CURSOR_BLINK);
+      lcd.sendCommand(LCD_CMD_CLEAR);
 
       var programHex = getParam("h");
       if (!programHex) 
@@ -714,21 +707,13 @@
               ctx.drawImage(on_green, getXPos(ledDefs.cw[cwi].x), getYPos(ledDefs.cw[cwi].y), getXSize(100), getYSize(100));
             }
           }
+          
+          lcd.render(ctx, getXPos(240), getYPos(588), getXSize(239), getYSize(76));
+          ctx.drawImage(lcdimg, getXPos(215), getYPos(550), getXSize(292), getYSize(126));
+          
         }
-        window.setTimeout(loop, 200 / (speed <= 0 ? 1 : speed));
+        window.setTimeout(loop, 0);//200 / (speed <= 0 ? 1 : speed));
       };
 
-      window.setTimeout(loop, 20);
-    }
-    };
-    Module.setStatus('Downloading...');
-    window.onerror = function (event)
-    {
-      // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
-      Module.setStatus('Exception thrown, see JavaScript console');
-      //    spinnerElement.style.display = 'none';
-      Module.setStatus = function (text)
-      {
-        if (text) Module.printErr('[post-exception status] ' + text);
-      };
+      loop();
     };

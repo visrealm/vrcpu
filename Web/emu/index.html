@@ -26,7 +26,7 @@
 <body>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="https://cpu.visualrealmsoftware.com">Troy's Breadboard Computer</a>
+    <a class="navbar-brand" href="/">Troy's Breadboard Computer</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -34,16 +34,16 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" href="https://cpu.visualrealmsoftware.com/asm">Assembler</a>
+          <a class="nav-link" href="/asm">Assembler</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="https://cpu.visualrealmsoftware.com/emu">Emulator</a>
+          <a class="nav-link active" href="/emu">Emulator</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://cpu.visualrealmsoftware.com/docs">Documentation</a>
+          <a class="nav-link" href="/docs">Documentation</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://cpu.visualrealmsoftware.com/gallery">Gallery</a>
+          <a class="nav-link" href="/gallery">Gallery</a>
         </li>
       </ul>
     </div>
@@ -51,6 +51,8 @@
   </nav>
 
   <img id="img_cpu_base" src="img/cpu_base_m.png" style="display:none;"></img>
+  <img id="img_lcd1602" src="img/lcd1602.png" style="display:none;"></img>
+
   <img id="img_red_glow" src="img/red_glow.png" style="display:none;"></img>
   <img id="img_red_on" src="img/red_on.png" style="display:none;"></img>
   <img id="img_green_glow" src="img/green_glow.png" style="display:none;"></img>
@@ -70,6 +72,7 @@
 
   <canvas id="canv" style="margin-top:10px;" width="100%" height="100%"></canvas>
 
+  <script type="text/javascript" src="vrEmuLcd.js"></script>
   <script type="text/javascript" src="cpemu_ui.js"></script>
   <script type="text/javascript" src="cpemu.js"></script>
 

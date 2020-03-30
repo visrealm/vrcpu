@@ -21,23 +21,23 @@ body {
 <body>
     
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="https://cpu.visualrealmsoftware.com">Troy's Breadboard Computer</a>
+  <a class="navbar-brand" href="/">Troy's Breadboard Computer</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" href="https://cpu.visualrealmsoftware.com/asm">Assembler</a>
+        <a class="nav-link" href="/asm">Assembler</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://cpu.visualrealmsoftware.com/emu">Emulator</a>
+        <a class="nav-link" href="/emu">Emulator</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://cpu.visualrealmsoftware.com/docs">Documentation</a>
+        <a class="nav-link" href="/docs">Documentation</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://cpu.visualrealmsoftware.com/gallery">Gallery</a>
+        <a class="nav-link" href="/gallery">Gallery</a>
       </li>
     </ul>
   </div>
