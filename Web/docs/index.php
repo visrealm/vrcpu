@@ -7,8 +7,9 @@
 <style>
 body {
 	background-image: url("../img/computer1.jpg");
-        background-repeat:no-repeat;
-       background-size:cover;
+    background-repeat:no-repeat;
+    background-size:cover;
+    background-attachment: fixed;
 } 
 
 .code
@@ -85,7 +86,7 @@ p
         <li><span class="code">Ra</span> General purpose register "A"</li>
         <li><span class="code">Rb</span> General purpose register "B" - this register is also the second operand for aritmetic and binary logic operations.</li>
         <li><span class="code">Rc</span> General purpose register "C"</li>
-        <li><span class="code">Rd</span> General purpose register "D" - this register is connected to a digital display.</li>
+        <li><span class="code">Rd</span> General purpose register "D" - this register is connected to a decimal display.</li>
         <li><span class="code">PC</span> Program counter</li>
         <li><span class="code">SP</span> Stack pointer</li>
         <li><span class="code">Acc</span> Accumulator - this is the output from the ALU</li>
@@ -111,7 +112,7 @@ p
     <h1>LABELS:</h1>
     <p>Labels start with "." (eg. .loop). Labels can be referenced anywhere a {value} or {address} is expected.</p>
     <p class="code">
-        <strong>.loop</strong><br/>
+        <strong>.loop:</strong><br/>
         &nbsp;&nbsp;inc Rd<br/>
         &nbsp;&nbsp;jnz <strong>.loop</strong><br/>
     </p>
@@ -123,6 +124,12 @@ p
     Will result in <span class="code">.myfunc</span> being placed in memory at address 0x80 (128).
     </p>
     
+    <h1>CONSTANTS:</h1>
+    <p>Define a constant with the syntax NAME = value. Constants can be used in place of values or addresses. eg.</p>
+    <p class="code">
+        <strong>MYVALUE = 3</strong><br/>
+        &nbsp;&nbsp;data Rd, MYVALUE<br/>
+    </p>
     
 
     <h1>INSTRUCTIONS:</h1>
