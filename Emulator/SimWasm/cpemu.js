@@ -193,7 +193,7 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 262144, "filename": "/rom.hex"}], "remote_package_size": 262144, "package_uuid": "5f464232-4fed-469d-8d40-ff830469e200"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 262144, "filename": "/rom.hex"}], "remote_package_size": 262144, "package_uuid": "580f49d9-4042-46ac-a4a3-6fda336e7bef"});
 
 })();
 
@@ -1397,11 +1397,11 @@ function updateGlobalBufferAndViews(buf) {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 7888,
+    STACK_BASE = 7904,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5250768,
-    DYNAMIC_BASE = 5250768,
-    DYNAMICTOP_PTR = 7856;
+    STACK_MAX = 5250784,
+    DYNAMIC_BASE = 5250784,
+    DYNAMICTOP_PTR = 7872;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1913,7 +1913,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 6864;
+// STATICTOP = STATIC_BASE + 6880;
 /* global initializers */ /*__ATINIT__.push();*/
 
 
@@ -1924,7 +1924,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 7872
+var tempDoublePtr = 7888
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -5522,6 +5522,12 @@ var _vrEmuLcdPixelState = Module["_vrEmuLcdPixelState"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_vrEmuLcdPixelState"].apply(null, arguments)
+};
+
+var _vrEmuLcdReadAddress = Module["_vrEmuLcdReadAddress"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_vrEmuLcdReadAddress"].apply(null, arguments)
 };
 
 var _vrEmuLcdReadByte = Module["_vrEmuLcdReadByte"] = function() {

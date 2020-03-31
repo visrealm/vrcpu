@@ -9,11 +9,11 @@
 
 NUMBER = 57
 
-.start:
+start:
 	data Rd, NUMBER
 
     mov Rb, Rd
-	data Ra, #7
+	data Ra, 7
 
 .lsr:	; right shift
 	call .ls
@@ -46,13 +46,14 @@ NUMBER = 57
 	jmp .sub
 	
 .noresult:
-	mov Rd, #1
+	mov Rd, 1
 	hlt
 	
 .ls:
 	lsr
-	jnc .ret
+	jnc ret
 .lsaddone:
 	inc Rb
-.ret:
+
+ret:
 	ret
