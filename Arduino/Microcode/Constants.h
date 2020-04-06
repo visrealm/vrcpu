@@ -336,11 +336,11 @@ class AluOpcode : public Opcode
   // bit:   |    7    |    6    |    5    |    4    |    3    |    2    |    1    |    0    |
   // value: |    1   grp   1    |use carry|---------  alu mode  --------|---- register -----|
 
-  static const uint8_t CarryOffset   = 5;
-  static const uint8_t AluModeOffset = 2;
-  static const uint8_t RegOffset     = 0;
+  static const int CarryOffset   = 5;
+  static const int AluModeOffset = 2;
+  static const int RegOffset     = 0;
 
-  static const uint8_t CarryMask     = (uint32_t)1 << CarryOffset;
+  static const uint8_t CarryMask     = (uint8_t)1 << CarryOffset;
   static const uint8_t AluModeMask   = AluMode::Mask << AluModeOffset;
   static const uint8_t RegMask       = Register::MinorMask << RegOffset;
 
@@ -401,19 +401,19 @@ class EepromAddress
   // value: |zero flag|cary flag|oflw flag|neg flag |-----  microcode step -------|----------------------------------- op code  ----------------------------------|
 
   private:
-    static const uint8_t OpcodeOffset    = 0;
-    static const uint8_t MicrotimeOffset = 8;
-    static const uint8_t FlagsOffset     = 11;
+    static const int OpcodeOffset    = 0;
+    static const int MicrotimeOffset = 8;
+    static const int FlagsOffset     = 11;
 
     static const uint16_t OpcodeMask    = Opcode::Mask << OpcodeOffset;
     static const uint16_t MicrotimeMask = (uint16_t)0x7  << MicrotimeOffset;
     static const uint16_t FlagsMask     = (uint16_t)0xf  << FlagsOffset;
 
   public:
-    static const uint8_t NegativeFlag = (uint8_t)1 << 0;
-    static const uint8_t OverflowFlag = (uint8_t)1 << 1;
-    static const uint8_t CarryFlag    = (uint8_t)1 << 2;
-    static const uint8_t ZeroFlag     = (uint8_t)1 << 3;
+    static const uint32_t NegativeFlag = (uint32_t)1 << 0;
+    static const uint32_t OverflowFlag = (uint32_t)1 << 1;
+    static const uint32_t CarryFlag    = (uint32_t)1 << 2;
+    static const uint32_t ZeroFlag     = (uint32_t)1 << 3;
 
     static const uint16_t TOTAL_BYTES = (uint16_t)1 << 15;
 
