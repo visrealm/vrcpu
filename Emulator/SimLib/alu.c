@@ -56,18 +56,18 @@ DLLEXPORT void aluTick(ALU* a)
 		switch (a->mode)
 		{
 			case B_MINUS_A:
-				valOut = valB - valA;
-				valOut2 = valB - valA;
+				valOut = valB - (valA + (a->useRb ? carry : 0));
+				valOut2 = valB - (valA + (a->useRb ? carry : 0));
 				break;
 
 			case A_MINUS_B:
-				valOut = valA - valB;
-				valOut2 = valA - valB;
+				valOut = valA - (valB + (a->useRb ? carry : 0));
+				valOut2 = valA - (valB + (a->useRb ? carry : 0));
 				break;
 
 			case A_PLUS_B:
-				valOut = valA + valB;
-				valOut2 = valA + valB;
+				valOut = valA + valB + (a->useRb ? carry : 0);
+				valOut2 = valA + valB + (a->useRb ? carry : 0);
 				break;
 
 			case A_XOR_B:
