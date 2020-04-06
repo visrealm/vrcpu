@@ -7,14 +7,13 @@
 ;
 ; Change the number on the first line below - is it prime?
 
-NUMBER = 57
+NUMBER = 228
 
 DISPLAY_MODE = LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON
 NEXTLINE = LCD_CMD_SET_DRAM_ADDR | 40
 
 lcc #LCD_INITIALIZE
 lcc #DISPLAY_MODE
-lcc #LCD_CMD_CLEAR
 
 ADDR   = 0
 STR_TERM = 0
@@ -23,15 +22,17 @@ ASCII_ZERO = 48 ; ascii 0
 
 	clra
 	data SP, 255
+	data Rd, NUMBER	
 
+; compute if Rd is prime
 start:
-	data Rd, NUMBER
+	lcc #LCD_CMD_CLEAR
+	push Rd
 	mov Rb, Rd
 	call printNumber
 	data Ra, strIs
 	call printStr
 	
-	data Rd, NUMBER
     mov Rb, Rd
 	data Ra, 7
 
@@ -58,21 +59,29 @@ start:
 	jnz .test
 	
 .result:
-	mov Rd, Rb
+	push Rb
 	dec Rb
 	jz .noresult
-	push Rd
-	mov Rb, Rd
 	data Ra, strNot
 	call printStr
 	data Ra, strPrime
 	call printStr
+	peek Rb
+	data Ra, ADDR
+	call toDec8
 	lcc #NEXTLINE
 	data Ra, strDivisibleBy
 	call printStr
-	pop Rb
-	call printNumber	
-	hlt
+	pop Rd
+	mov Rb, Rd
+	data Ra, ADDR
+	call printBCD
+	pop Ra ; lose current result
+	clr Ra
+	.pause: ; little loop to hold the answer for a bit
+		dec Ra
+		jz start
+		jmp .pause
 	
 .test:
 	jnc .next

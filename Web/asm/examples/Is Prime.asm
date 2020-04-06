@@ -7,7 +7,7 @@
 ;
 ; Change the number on the first line below - is it prime?
 
-NUMBER = 57
+NUMBER = 21
 
 start:
 	data Rd, NUMBER
@@ -15,45 +15,41 @@ start:
     mov Rb, Rd
 	data Ra, 7
 
-.lsr:	; right shift
-	call .ls
+rightShift:	; right shift
+	call leftRotate
 	dec Ra
-	jnz .lsr
+	jnz rightShift
+	data Ra, 0x7f
+	and Ra
+	mov Rb, Ra
 	
-	inc Rb
-	jnn .next
-	data Rc, 0x80 ; remove high bit if present
-	sub Rb, Rc
-	mov Rb, Rc
+	data Ra, 0x01
 
-.next:
-	dec Rb
-	jnz .next2
-	jmp .noresult
+; check id Rc is divisible by Rb
+checkNext:
+	cmp Rb, Ra ; if we're down to 1
+	jz .noresult
 	
-.next2:
 	mov Rc, Rd
-.sub:
-	sub Rc
-	jnz .test
-	
-.result:
-	mov Rd, Rb
-	hlt
-	
-.test:
-	jnc .next
-	jmp .sub
-	
-.noresult:
-	mov Rd, 1
-	hlt
-	
-.ls:
-	lsr
-	jnc ret
-.lsaddone:
-	inc Rb
+	.doSubtract:
+		sub Rc
+		jz .result
+		jc .doSubtract
+		dec Rb
+		jmp checkNext
 
-ret:
-	ret
+	.result:
+		mov Rd, Rb
+		hlt
+
+	.noresult:
+		mov Rd, 1
+		hlt
+	
+leftRotate:
+	lsr
+	jnc .ret
+	.lsaddone:
+		inc Rb
+	.ret:
+		ret

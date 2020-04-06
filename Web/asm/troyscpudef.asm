@@ -90,8 +90,8 @@
     xor  {dest: reg}             -> 0b110 @ 0b100 @ dest[1:0]
     not  {dest: reg}             -> 0b110 @ 0b111 @ dest[1:0]
     cmp  Rb, {dest: reg}         -> 0b111 @ 0b101 @ dest[1:0]
-    cmp  {dest: reg}, Rb         -> 0b111 @ 0b100 @ dest[1:0]
-    cmp  {dest: reg}             -> 0b111 @ 0b100 @ dest[1:0]
+    cmp  {dest: reg}, Rb         -> 0b111 @ 0b110 @ dest[1:0]
+    cmp  {dest: reg}             -> 0b111 @ 0b110 @ dest[1:0]
     tst  {src: reg}              -> 0b00 @ 0b110 @ src[2:0]
 
     lcc #{imm}                   -> 0b01 @ 0b111 @ 0b110 @ imm[7:0]
