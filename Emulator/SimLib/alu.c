@@ -58,34 +58,34 @@ DLLEXPORT void aluTick(ALU* a)
 			case B_MINUS_A:
 				valOut = valB - (valA + (a->useRb ? carry : 0));
 				valOut2 = valB - (valA + (a->useRb ? carry : 0));
-				break;
+        oflow = (valOut & 0x80) != (getRegisterValue(a->out) & 0x80);
+        break;
 
 			case A_MINUS_B:
 				valOut = valA - (valB + (a->useRb ? carry : 0));
 				valOut2 = valA - (valB + (a->useRb ? carry : 0));
-				break;
+        oflow = (valOut & 0x80) != (getRegisterValue(a->out) & 0x80);
+        break;
 
 			case A_PLUS_B:
 				valOut = valA + valB + (a->useRb ? carry : 0);
 				valOut2 = valA + valB + (a->useRb ? carry : 0);
-				break;
+        oflow = (valOut & 0x80) != (getRegisterValue(a->out) & 0x80);
+        break;
 
 			case A_XOR_B:
 				valOut = valA ^ valB;
 				valOut2 = valA ^ valB;
-				oflow = carry;
 				break;
 
 			case A_OR_B:
 				valOut = valA | valB;
 				valOut2 = valA | valB;
-				oflow = carry;
 				break;
 
 			case A_AND_B:
 				valOut = valA & valB;
 				valOut2 = valA & valB;
-				oflow = carry;
 				break;
 
 			default:
