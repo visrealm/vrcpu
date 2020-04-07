@@ -34,7 +34,7 @@ uint32_t getImmediateMovControlWord(const Register &dest, uint8_t microtime, std
     case STEP1: return SET_MAW_FROM_PC;
 
     // read immediate value into destimation register
-    case STEP2: return (dest == Register::PC() ? 0 : PCC) | READ_PROGRAM_MEMORY | dest.readFromBus();
+    case STEP2: return (dest == Register::PC() ? 0 : PCC) | READ_PROGRAM_MEMORY | dest.readFromBus() | INSTRUCTION_END;
   }
 
   return INSTRUCTION_END;
@@ -54,7 +54,9 @@ uint32_t getClearAllControlWord(uint8_t microtime, std::string& desc)
                        Register::Ra().readFromBus() |
                        Register::Rb().readFromBus() |
                        Register::Rc().readFromBus() |
-                       Register::Rd().readFromBus();
+                       Register::Rd().readFromBus() |
+                       Register::StP().readFromBus() |
+                       INSTRUCTION_END;
   }
 
   return INSTRUCTION_END;

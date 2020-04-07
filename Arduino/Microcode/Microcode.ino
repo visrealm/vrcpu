@@ -3,8 +3,6 @@
  * 
  * Copyright (c) 2019 Troy Schrapel
  * 
- * Based on https://github.com/jamesbates/jcpu
- * 
  * This code is licensed under the MIT license
  * 
  * This EEPROM write is page-write enabled. It writes all data sequentially.
