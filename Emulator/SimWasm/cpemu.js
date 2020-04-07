@@ -193,7 +193,7 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 262144, "filename": "/rom.hex"}], "remote_package_size": 262144, "package_uuid": "78e3fb2c-c5e6-4d9d-9c63-d7dc5092f092"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 262144, "filename": "/rom.hex"}], "remote_package_size": 262144, "package_uuid": "256c9ec7-e0a1-4f96-849c-135ff7bc4ce2"});
 
 })();
 

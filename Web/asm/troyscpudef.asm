@@ -18,9 +18,14 @@
                 
     nop                          -> 0b00 @ 0b000 @ 0b000
     hlt                          -> 0b00 @ 0b101 @ 0b101
-    mov  {dest: reg}, {src: reg} -> 0b00 @ dest[2:0] @ src[2:0]
+    mov  {dest: reg}, {src: reg} -> {
+		assert(src != dest)
+		0b00 @ dest[2:0] @ src[2:0]}
+		
     mov  {dest: reg}, {value}    -> 0b00 @ dest[2:0] @ 0b111 @ value[7:0]
-    mva  {src: reg}              -> 0b00 @ 0b000 @ src[2:0]
+    mva  {src: reg}              ->  {
+		assert(src != 0b000)
+		0b00 @ 0b000 @ src[2:0] }
     mvb  {src: reg}              -> 0b00 @ 0b001 @ src[2:0]
     mvc  {src: reg}              -> 0b00 @ 0b010 @ src[2:0]
     mvd  {src: reg}              -> 0b00 @ 0b011 @ src[2:0]
@@ -81,6 +86,8 @@
     sub  Rb, {src: reg}          -> 0b110 @ 0b001 @ src[1:0]
     subc Rb, {src: reg}          -> 0b111 @ 0b001 @ src[1:0]
     lsr                          -> 0b110 @ 0b011 @ 0b01
+    lsh                          -> 0b110 @ 0b011 @ 0b01
+    rol                          -> 0b111 @ 0b011 @ 0b01
 
     and  {dest: reg}, Rb         -> 0b110 @ 0b110 @ dest[1:0]
     or   {dest: reg}, Rb         -> 0b110 @ 0b101 @ dest[1:0]

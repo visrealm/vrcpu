@@ -49,12 +49,11 @@ mul8:
 ;  Rc: result
 ;  Ra: remainder
 div8:
-	data Rc, 0x00
+	clr Rc
 	
 	.step:
-		cmp Rb, Ra
-		jz .add
-		jc .return
+		cmp Ra, Rb
+		jnc .return
 		
 	.add:
 		inc Rc
@@ -62,7 +61,8 @@ div8:
 		jnz .step
 
 	.return:
-		ret		
+		ret
+
 		
 ; function add16 - adds 16-bit numbers in memory. 
 ; Number 1 address in Ra

@@ -394,7 +394,7 @@ Module.onRuntimeInitialized = function ()
   var speed = parseInt(getParam("s"));
   if (!speed) speed = 100;
   if (speed < 0) speed = 1;
-  if (speed > 300) speed = 300;
+  if (speed > 500) speed = 500;
   
   console.log(speed);
 
@@ -419,7 +419,7 @@ Module.onRuntimeInitialized = function ()
     }
     else if (getMouseDist(evt, { x: getXPos(spdUp.x), y: getYPos(spdUp.y) }) < 10)
     {
-      if (speed < 300)
+      if (speed < 500)
       {
         speed += 20;
       }
@@ -520,6 +520,7 @@ Module.onRuntimeInitialized = function ()
     setCursor(evt);
   }, false);
 
+  var wasRunning = true;
   var loop = function ()
   {
     var stepsPerCycle = 1;
@@ -550,7 +551,16 @@ Module.onRuntimeInitialized = function ()
       ctx.fillStyle = "#262626f0";
       ctx.fillRect(0, 0, canv.width, canv.height);
       ctx.drawImage(img, xoff, yoff, scale * $(img).width(), scale * $(img).height());
-      //console.log(tick);
+
+      
+      var cwv = simLib.getControlWord();
+      var isRunning = (cwv & (1 << 23)) == 0;
+
+      if (isRunning != wasRunning)
+      {
+        console.log(tick);
+      }
+      wasRunning = isRunning;
 
       if (isResetting)
       {
@@ -664,9 +674,8 @@ Module.onRuntimeInitialized = function ()
       ctx.drawImage(glow_green, getXPos(ledDefs.runMode.x), getYPos(ledDefs.runMode.y), getXSize(100), getYSize(100));
       ctx.drawImage(on_green, getXPos(ledDefs.runMode.x), getYPos(ledDefs.runMode.y), getXSize(100), getYSize(100));
 
-      var cwv = simLib.getControlWord();
 
-      if ((tick % 2) && (cwv & (1 << 23)) == 0)
+      if ((tick % 2) && isRunning)
       {
         ctx.drawImage(glow_blue, getXPos(ledDefs.clk.x), getYPos(ledDefs.clk.y), getXSize(100), getYSize(100));
         ctx.drawImage(on_blue, getXPos(ledDefs.clk.x), getYPos(ledDefs.clk.y), getXSize(100), getYSize(100));
