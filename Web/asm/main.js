@@ -19,6 +19,31 @@ function main() {
     })
 }
 
+function getQueryParams()
+{
+  var query = window.location.search.substring(1);
+  if (!query)
+  {
+	return {};
+  }
+
+  return _.chain(query.split('&'))
+	.map(function (params)
+	{
+	  var p = params.split('=');
+	  return [p[0], decodeURIComponent(p[1])];
+	}).object()
+	.value();
+};
+
+function getParam(key)
+{
+  var params = getQueryParams();
+  if (key in params)
+	return params[key];
+  return "";
+};
+
 function loadProgramFile(file) {
   fetch(file)
     .then(r => r.text())
@@ -40,8 +65,14 @@ function setupEditor() {
   })
 
   g_codeEditor.setOption("theme", "lesser-dark");
+  
+  var example = getParam("e");
+  if (!example)
+  {
+	  example = "Fibonacci";
+  }
 
-  loadProgramFile("examples/Fibonacci.asm");
+  loadProgramFile("examples/"  + example + ".asm");
 }
 
 
@@ -123,7 +154,7 @@ var emulator = null;
 
 function emulate() {
   doAssemble(4, function (output) {
-    var newUrl = "../emu/?h=" + output;
+    var newUrl = "../emu/?h=" + output + "&s=" + getParam("s");
     if (emulator && emulator.location.href) {
       emulator.location.href = newUrl;
       emulator.focus();

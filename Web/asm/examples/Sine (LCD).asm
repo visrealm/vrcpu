@@ -1,5 +1,17 @@
+; -----------------------------------------------
 ; Demonstration of CGRAM in the character display
 ; Displays the Commodore computers logo
+; -----------------------------------------------
+;
+; Troy's 8-bit computer - Emulator
+;
+; Copyright (c) 2020 Troy Schrapel
+;
+; This code is licensed under the MIT license
+;
+; https://github.com/visrealm/vrcpu
+;
+; ===============================================
 
 DISPLAY_MODE = LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON
 NEXTLINE = LCD_CMD_SET_DRAM_ADDR | 40

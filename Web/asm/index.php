@@ -168,6 +168,7 @@ span::selection {
     <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark"><span  class="text-white">Assembler powered by <a href="https://github.com/hlorenzi/customasm">customasm</a></span></nav>
   </div>
 
+  <script src="underscore.min.js"></script>
   <script src="main.js"></script>
   <script src="codemirror/codemirror.js"></script>
   <script src="codemirror/troy_syntax.js"></script>
