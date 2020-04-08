@@ -99,6 +99,7 @@ var ratio = 1.0,
 
 window.addEventListener('resize', resizeCanvas, false);
 document.onload = resizeCanvas;
+img.onload = resizeCanvas;
 
 var ledDefs = {
   ra: [
@@ -300,10 +301,23 @@ function resizeCanvas()
   canv.width = window.innerWidth;
   canv.height = window.innerHeight - ($(".navbar").height() + 40);
 
-  ratio = $(img).width() / $(img).height();
-  outw = ratio * $(canv).height();
-  xoff = ($(canv).width() - outw) * 0.5;
-  scale = outw / $(img).width();
+  imgratio = $(img).width() / $(img).height();
+  canvratio = canv.width / canv.height;
+
+  if (imgratio < canvratio)
+  {
+    outw = imgratio * canv.height;
+    xoff = (canv.width - outw) * 0.5;
+    yoff = 0;
+    scale = outw / $(img).width();
+  }
+  else
+  {
+    outh = canv.width / imgratio;
+    yoff = (canv.height - outh) * 0.5;
+    xoff = 0;
+    scale = outh / $(img).height();
+  }
 
   ctx.fillStyle = "#262626";
   ctx.fillRect(0, 0, canv.width, canv.height);
@@ -331,19 +345,6 @@ var getMouseDist = function (evt, target)
   var dx = Math.abs(pos.x - target.x);
   var dy = Math.abs(pos.y - target.y);
   return Math.sqrt(dx * dx + dy * dy);
-}
-
-
-var renderByte = function (img, val, arr, sz)
-{
-  if (!sz) sz = 100;
-  for (var a = 0; a < arr.length; ++a)
-  {
-    if (val & (1 << a))
-    {
-      ctx.drawImage(img, getXPos(arr[a].x), getYPos(arr[a].y), getXSize(sz), getYSize(sz));
-    }
-  }
 }
 
 var Component = {
@@ -404,15 +405,13 @@ Module.onRuntimeInitialized = function ()
   if (speed < 0) speed = 1;
   if (speed > 500) speed = 500;
   
-  console.log(speed);
-
-  var clkMode = { x: 210, y: 132 }
-  var step = { x: 131, y: 137 }
-  var reset = { x: 40, y: 764 }
-  var spdUp = { x: 85, y: 94 }
-  var spdDn = { x: 85, y: 146 }
-  var dispNeg = { x: 1050, y: 61 }
-  var dispHex = { x: 1027, y: 63 }
+  var clkMode = { x: 280, y: 173 }
+  var step = { x: 188, y: 188 }
+  var reset = { x: 89, y: 986 }
+  var spdUp = { x: 135, y: 124 }
+  var spdDn = { x: 104, y: 188 }
+  var dispNeg = { x: 1376, y: 91 }
+  var dispHex = { x: 1320, y: 89 }
 
   var dispMode = 0; // unsigned
 
@@ -420,33 +419,33 @@ Module.onRuntimeInitialized = function ()
 
   canv.addEventListener('click', function (evt)
   {
-    if (getMouseDist(evt, { x: getXPos(clkMode.x), y: getYPos(clkMode.y) }) < 10)
+    if (getMouseDist(evt, { x: getXPos(clkMode.x), y: getYPos(clkMode.y) }) < getXSize(30))
     {
       autoClock = !autoClock;
       if (!autoClock && (tick % 2))++tick;
     }
-    else if (getMouseDist(evt, { x: getXPos(spdUp.x), y: getYPos(spdUp.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(spdUp.x), y: getYPos(spdUp.y) }) < getXSize(30))
     {
       if (speed < 500)
       {
         speed += 20;
       }
     }
-    else if (getMouseDist(evt, { x: getXPos(spdDn.x), y: getYPos(spdDn.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(spdDn.x), y: getYPos(spdDn.y) }) < getXSize(30))
     {
       if (speed > 0)
       {
         speed -= 20;
       }
     }
-    else if (getMouseDist(evt, { x: getXPos(dispNeg.x), y: getYPos(dispNeg.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(dispNeg.x), y: getYPos(dispNeg.y) }) < getXSize(30))
     {
       if (dispMode == 1)
         dispMode = 0;
       else
         dispMode = 1;
     }
-    else if (getMouseDist(evt, { x: getXPos(dispHex.x), y: getYPos(dispHex.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(dispHex.x), y: getYPos(dispHex.y) }) < getXSize(30))
     {
       if (dispMode == 2)
         dispMode = 0;
@@ -458,31 +457,31 @@ Module.onRuntimeInitialized = function ()
   var setCursor = function (evt)
   {
    canv.style.cursor = "grab";
-    if (getMouseDist(evt, { x: getXPos(clkMode.x), y: getYPos(clkMode.y) }) < 10)
+    if (getMouseDist(evt, { x: getXPos(clkMode.x), y: getYPos(clkMode.y) }) < getXSize(30))
     {
       canv.title = "Clock mode (auto/manual).";
     }
-    else if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < getXSize(30))
     {
       canv.title = "Manual step.";
     }
-    else if (getMouseDist(evt, { x: getXPos(reset.x), y: getYPos(reset.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(reset.x), y: getYPos(reset.y) }) < getXSize(30))
     {
       canv.title = "Reset program counter.";
     }
-    else if (getMouseDist(evt, { x: getXPos(spdUp.x), y: getYPos(spdUp.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(spdUp.x), y: getYPos(spdUp.y) }) < getXSize(30))
     {
       canv.title = "Increase clock speed.";
     }
-    else if (getMouseDist(evt, { x: getXPos(spdDn.x), y: getYPos(spdDn.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(spdDn.x), y: getYPos(spdDn.y) }) < getXSize(30))
     {
       canv.title = "Decrease clock speed.";
     }
-    else if (getMouseDist(evt, { x: getXPos(dispNeg.x), y: getYPos(dispNeg.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(dispNeg.x), y: getYPos(dispNeg.y) }) < getXSize(30))
     {
       canv.title = "Toggle display (signed/unsigned)";
     }
-    else if (getMouseDist(evt, { x: getXPos(dispHex.x), y: getYPos(dispHex.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(dispHex.x), y: getYPos(dispHex.y) }) < getXSize(30))
     {
       canv.title = "Toggle display (hex/dec)";
     }
@@ -501,11 +500,11 @@ Module.onRuntimeInitialized = function ()
 
   canv.addEventListener('mousedown', function (evt)
   {
-    if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < 10)
+    if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < getXSize(30))
     {
       if (tick % 2 == 0)++tick;
     }
-    else if (getMouseDist(evt, { x: getXPos(reset.x), y: getYPos(reset.y) }) < 10)
+    else if (getMouseDist(evt, { x: getXPos(reset.x), y: getYPos(reset.y) }) < getXSize(30))
     {
       isResetting = true;
     }
@@ -518,7 +517,7 @@ Module.onRuntimeInitialized = function ()
 
   canv.addEventListener('mouseup', function (evt)
   {
-    if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < 10)
+    if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < getXSize(30))
     {
       if (tick % 2)++tick;
     }
@@ -528,6 +527,26 @@ Module.onRuntimeInitialized = function ()
     setCursor(evt);
   }, false);
 
+  var drawScaled = function(img, x, y, w, h)
+  {
+    if (img.complete && img.naturalHeight !== 0)
+    {
+      ctx.drawImage(img, getXPos(x), getYPos(y), getXSize(w), getYSize(h));
+    }
+  }
+
+  var renderByte = function (img, val, arr, sz)
+  {
+    if (!sz) sz = 100;
+    for (var a = 0; a < arr.length; ++a)
+    {
+      if (val & (1 << a))
+      {
+        drawScaled(img, arr[a].x, arr[a].y, sz, sz);
+      }
+    }
+  }
+  
   var wasRunning = true;
   var loop = function ()
   {
@@ -558,8 +577,7 @@ Module.onRuntimeInitialized = function ()
       
       ctx.fillStyle = "#262626f0";
       ctx.fillRect(0, 0, canv.width, canv.height);
-      ctx.drawImage(img, xoff, yoff, scale * $(img).width(), scale * $(img).height());
-
+      drawScaled(img, 0, 0, $(img).width(), $(img).height());
       
       var cwv = simLib.getControlWord();
       var isRunning = (cwv & (1 << 23)) == 0;
@@ -587,18 +605,19 @@ Module.onRuntimeInitialized = function ()
       renderByte(glow_red, rcv, ledDefs.rc);
       renderByte(on_red_tc, rcv, ledDefs.rc);
 
+      var segSizeX = 60;
+      var segSizeY = 77;
+
       var rdv = simLib.getValue(Component.Rd);
       if (dispMode == 1)
       {
         if (rdv & 0x80)
         {
           rdv = Math.abs(256 - rdv);
-          ctx.drawImage(seg_g, getXPos(ledDefs.rd[3].x), getYPos(ledDefs.rd[3].y), getXSize(42), getYSize(59));
+          drawScaled(seg_g, ledDefs.rd[3].x, ledDefs.rd[3].y, segSizeX, segSizeY);
         }
       }
 
-      var segSizeX =  getXSize(60);
-      var segSizeY =  getXSize(77);
       if (dispMode == 2)
       {
         var hex = rdv.toString(16).padStart(3, '0');
@@ -614,13 +633,13 @@ Module.onRuntimeInitialized = function ()
           else digit -= 48;
 
           var segs = seg_digits[digit];
-          if (segs & sega_f) ctx.drawImage(seg_a, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segb_f) ctx.drawImage(seg_b, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segc_f) ctx.drawImage(seg_c, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segd_f) ctx.drawImage(seg_d, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & sege_f) ctx.drawImage(seg_e, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segf_f) ctx.drawImage(seg_f, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segg_f) ctx.drawImage(seg_g, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & sega_f) drawScaled(seg_a, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segb_f) drawScaled(seg_b, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segc_f) drawScaled(seg_c, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segd_f) drawScaled(seg_d, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & sege_f) drawScaled(seg_e, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segf_f) drawScaled(seg_f, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segg_f) drawScaled(seg_g, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
         }
       }
       else
@@ -629,13 +648,13 @@ Module.onRuntimeInitialized = function ()
         {
           var digit = Math.floor((rdv / Math.pow(10, dig))) % 10;
           var segs = seg_digits[digit];
-          if (segs & sega_f) ctx.drawImage(seg_a, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segb_f) ctx.drawImage(seg_b, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segc_f) ctx.drawImage(seg_c, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segd_f) ctx.drawImage(seg_d, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & sege_f) ctx.drawImage(seg_e, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segf_f) ctx.drawImage(seg_f, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
-          if (segs & segg_f) ctx.drawImage(seg_g, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & sega_f) drawScaled(seg_a, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segb_f) drawScaled(seg_b, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segc_f) drawScaled(seg_c, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segd_f) drawScaled(seg_d, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & sege_f) drawScaled(seg_e, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segf_f) drawScaled(seg_f, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
+          if (segs & segg_f) drawScaled(seg_g, ledDefs.rd[dig].x, ledDefs.rd[dig].y, segSizeX, segSizeY);
         }
       }
 
@@ -677,25 +696,25 @@ Module.onRuntimeInitialized = function ()
 
       if (autoClock)
       {
-        ctx.drawImage(glow_green, getXPos(ledDefs.clkmode.x), getYPos(ledDefs.clkmode.y), getXSize(100), getYSize(100));
-        ctx.drawImage(on_green_br, getXPos(ledDefs.clkmode.x), getYPos(ledDefs.clkmode.y), getXSize(100), getYSize(100));
+        drawScaled(glow_green, ledDefs.clkmode.x, ledDefs.clkmode.y, 100, 100);
+        drawScaled(on_green_br, ledDefs.clkmode.x, ledDefs.clkmode.y, 100, 100);
       }
 
-      ctx.drawImage(glow_green, getXPos(ledDefs.runMode.x), getYPos(ledDefs.runMode.y), getXSize(100), getYSize(100));
-      ctx.drawImage(on_green_l, getXPos(ledDefs.runMode.x), getYPos(ledDefs.runMode.y), getXSize(100), getYSize(100));
+      drawScaled(glow_green, ledDefs.runMode.x, ledDefs.runMode.y, 100, 100);
+      drawScaled(on_green_l, ledDefs.runMode.x, ledDefs.runMode.y, 100, 100);
 
 
       if ((tick % 2) && isRunning)
       {
-        ctx.drawImage(glow_blue, getXPos(ledDefs.clk.x), getYPos(ledDefs.clk.y), getXSize(100), getYSize(100));
-        ctx.drawImage(on_blue, getXPos(ledDefs.clk.x), getYPos(ledDefs.clk.y), getXSize(100), getYSize(100));
+        drawScaled(glow_blue, ledDefs.clk.x, ledDefs.clk.y, 100, 100);
+        drawScaled(on_blue, ledDefs.clk.x, ledDefs.clk.y, 100, 100);
       }
 
 
       if (cwv & (1 << 15))
       {
-        ctx.drawImage(glow_green, getXPos(ledDefs.pgm.x), getYPos(ledDefs.pgm.y), getXSize(100), getYSize(100));
-        ctx.drawImage(on_green_br, getXPos(ledDefs.pgm.x), getYPos(ledDefs.pgm.y), getXSize(100), getYSize(100));
+        drawScaled(glow_green, ledDefs.pgm.x, ledDefs.pgm.y, 100, 100);
+        drawScaled(on_green_br, ledDefs.pgm.x, ledDefs.pgm.y, 100, 100);
       }
 
       var bwv = 1 << (cwv & 0x07);
@@ -733,13 +752,13 @@ Module.onRuntimeInitialized = function ()
 
         if (on)
         {
-          ctx.drawImage(glow_green, getXPos(ledDefs.cw[cwi].x), getYPos(ledDefs.cw[cwi].y), getXSize(100), getYSize(100));
-          ctx.drawImage(on_green_br, getXPos(ledDefs.cw[cwi].x), getYPos(ledDefs.cw[cwi].y), getXSize(100), getYSize(100));
+          drawScaled(glow_green, ledDefs.cw[cwi].x, ledDefs.cw[cwi].y, 100, 100);
+          drawScaled(on_green_br, ledDefs.cw[cwi].x, ledDefs.cw[cwi].y, 100, 100);
         }
       }
       
       lcd.render(ctx, getXPos(340), getYPos(780), getXSize(300), getYSize(106));
-      ctx.drawImage(lcdimg, getXPos(313), getYPos(711), getXSize(674), getYSize(177));
+      drawScaled(lcdimg, 313, 711, 674, 177);
       
     }
     window.setTimeout(loop, speed > 160 ? 0 : (200 / (speed <= 0 ? 1 : speed)));
