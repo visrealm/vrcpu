@@ -16,6 +16,7 @@ function main() {
     .then(wasm => {
       g_wasm = wasm
       document.getElementById("buttonAssemble").disabled = false
+      assemble();
     })
 }
 
@@ -50,6 +51,8 @@ function loadProgramFile(file) {
     .then(r => g_codeEditor.setValue(r))
 
   g_codeEditor.refresh()
+  
+  assemble();
 }
 
 

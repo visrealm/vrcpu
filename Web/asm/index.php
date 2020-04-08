@@ -37,6 +37,7 @@ body {
   margin: 0.5em;
   width: calc(100% - 1em);
   height: calc(100% - 6em);
+  font-size: 10pt;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto 1fr;
