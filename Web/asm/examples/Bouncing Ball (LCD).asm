@@ -1,5 +1,5 @@
-; -----------------------------------------------
-; Bounce a ball around the character LCD display
+; ===============================================
+; Bounce a ball around the character LCD
 ; -----------------------------------------------
 ;
 ; Troy's 8-bit computer - Emulator
@@ -15,7 +15,7 @@
 ; display mode flags
 DISPLAY_MODE = LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON
 
-; memory location constants
+; memory address constants
 ; -----------------------------
 _PIXELX        = 0x00        ; ball overall X position
 _DIR_X         = _PIXELX + 1 ; ball X direction
@@ -457,16 +457,31 @@ div8:
 ; -----------------------------------------------
 
 ballData:
+
+; filled ball
+;#d32 0x0c1e0000
+;#d32 0x060f0000
+;#d32 0x03070010
+;#d32 0x01031018
+;#d32 0x0001181c
+
 ; empty ball
 ;#d32 0x0c120000
 ;#d32 0x06090000
-;#d32 0x03080000
-;#d32 0x01020010
-;#d32 0x00011008
+;#d32 0x03040010
+;#d32 0x01021008
+;#d32 0x00011804
 
-; filled ball
-#d32 0x0c1e0000
-#d32 0x060f0000
-#d32 0x03070000
-#d32 0x01030010
-#d32 0x00011018
+; square ball
+;#d32 0x1e1e0000
+;#d32 0x0f0f0000
+;#d32 0x07071010
+;#d32 0x03031818
+;#d32 0x01011c1c
+
+; empty square
+#d32 0x1e120000
+#d32 0x0f090000
+#d32 0x07041010
+#d32 0x03021808
+#d32 0x01011c04

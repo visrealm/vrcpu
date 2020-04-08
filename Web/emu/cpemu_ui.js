@@ -41,10 +41,18 @@ var img = document.getElementById("img_cpu_base");
 var lcdimg = document.getElementById("img_lcd1602");
 var glow_red = document.getElementById("img_red_glow");
 var on_red = document.getElementById("img_red_on");
+var on_red_br = document.getElementById("img_red_br_on");
+var on_red_tc = document.getElementById("img_red_tc_on");
 var glow_yellow = document.getElementById("img_yellow_glow");
 var on_yellow = document.getElementById("img_yellow_on");
+var on_yellow_br = document.getElementById("img_yellow_br_on");
+var on_yellow_bl = document.getElementById("img_yellow_bl_on");
+var on_yellow_tc = document.getElementById("img_yellow_tc_on");
 var glow_green = document.getElementById("img_green_glow");
 var on_green = document.getElementById("img_green_on");
+var on_green_br = document.getElementById("img_green_br_on");
+var on_green_bl = document.getElementById("img_green_bl_on");
+var on_green_l = document.getElementById("img_green_l_on");
 var glow_blue = document.getElementById("img_blue_glow");
 var on_blue = document.getElementById("img_blue_on");
 
@@ -94,175 +102,175 @@ document.onload = resizeCanvas;
 
 var ledDefs = {
   ra: [
-    { x: 1127, y: 774 },
-    { x: 1109, y: 775 },
-    { x: 1088, y: 775 },
-    { x: 1069, y: 774 },
-    { x: 1049, y: 774 },
-    { x: 1029, y: 776 },
-    { x: 1010, y: 777 },
-    { x: 990, y: 779 }
+    { x: 1470, y: 1024 },
+    { x: 1443, y: 1022 },
+    { x: 1418, y: 1022 },
+    { x: 1393, y: 1023 },
+    { x: 1368, y: 1023 },
+    { x: 1345, y: 1022 },
+    { x: 1321, y: 1023 },
+    { x: 1295, y: 1022 }
   ],
 
   rb: [
-    { x: 1126, y: 480 },
-    { x: 1106, y: 480 },
-    { x: 1087, y: 480 },
-    { x: 1067, y: 480 },
-    { x: 1047, y: 480 },
-    { x: 1028, y: 479 },
-    { x: 1008, y: 478 },
-    { x: 990, y: 478 }
+    { x: 1473, y: 644 },
+    { x: 1448, y: 645 },
+    { x: 1425, y: 645 },
+    { x: 1397, y: 646 },
+    { x: 1370, y: 646 },
+    { x: 1347, y: 645 },
+    { x: 1322, y: 644 },
+    { x: 1294, y: 645 }
   ],
 
   rc: [
-    { x: 833, y: 158 },
-    { x: 814, y: 159 },
-    { x: 794, y: 160 },
-    { x: 774, y: 161 },
-    { x: 753, y: 160 },
-    { x: 733, y: 159 },
-    { x: 714, y: 158 },
-    { x: 695, y: 158 }
+    { x: 1101, y: 239 },
+    { x: 1077, y: 241 },
+    { x: 1050, y: 241 },
+    { x: 1024, y: 243 },
+    { x: 1000, y: 241 },
+    { x: 975, y: 241 },
+    { x: 951, y: 240 },
+    { x: 927, y: 240 }
   ],
 
   rd: [
-    { x: 1244, y: 89 },
-    { x: 1201, y: 89 },
-    { x: 1158, y: 89 },
-    { x: 1114, y: 88 }
+    { x: 1629, y: 128 },
+    { x: 1571, y: 129 },
+    { x: 1514, y: 129 },
+    { x: 1457, y: 129 }
   ],
 
   bus: [
-    { x: 680, y: -37 },
-    { x: 658, y: -35 },
-    { x: 637, y: -32 },
-    { x: 616, y: -33 },
-    { x: 596, y: -33 },
-    { x: 578, y: -32 },
-    { x: 557, y: -34 },
-    { x: 537, y: -33 }
+    { x: 904, y: -11 },
+    { x: 879, y: -9 },
+    { x: 853, y: -6 },
+    { x: 826, y: -7 },
+    { x: 800, y: -6 },
+    { x: 776, y: -6 },
+    { x: 749, y: -5 },
+    { x: 723, y: -8 }
   ],
 
   ma: [
-    { x: 142, y: 291 },
-    { x: 124, y: 293 },
-    { x: 106, y: 293 },
-    { x: 88, y: 293 },
-    { x: 69, y: 294 },
-    { x: 50, y: 295 },
-    { x: 32, y: 295 },
-    { x: 13, y: 296 }
+    { x: 227, y: 405 },
+    { x: 204, y: 407 },
+    { x: 179, y: 406 },
+    { x: 155, y: 406 },
+    { x: 129, y: 406 },
+    { x: 105, y: 405 },
+    { x: 79, y: 404 },
+    { x: 57, y: 406 }
   ],
 
-  pgm: { x: 21, y: 253 },
-  clk: { x: 412, y: 28 },
-  clkmode: { x: 239, y: 110 },
-  runMode: { x: 20, y: 457 },
-  pgmMode: { x: 16, y: 435 },
+  pgm: { x: 65, y: 362 },
+  clk: { x: 573, y: 69 },
+  clkmode: { x: 351, y: 164 },
+  runMode: { x: 62, y: 608 },
+  pgmMode: { x: 74, y: 590 },
 
   me: [
-    { x: 534, y: 164 },
-    { x: 514, y: 164 },
-    { x: 495, y: 164 },
-    { x: 474, y: 163 },
-    { x: 455, y: 163 },
-    { x: 436, y: 163 },
-    { x: 416, y: 164 },
-    { x: 397, y: 165 }
+    { x: 727, y: 251 },
+    { x: 702, y: 250 },
+    { x: 677, y: 249 },
+    { x: 651, y: 246 },
+    { x: 627, y: 246 },
+    { x: 602, y: 245 },
+    { x: 578, y: 245 },
+    { x: 553, y: 245 }
   ],
 
   alu: [
-    { x: 836, y: 477 },
-    { x: 815, y: 478 },
-    { x: 794, y: 478 },
-    { x: 774, y: 479 },
-    { x: 754, y: 479 },
-    { x: 734, y: 481 },
-    { x: 713, y: 480 },
-    { x: 694, y: 480 }
+    { x: 1102, y: 638 },
+    { x: 1074, y: 640 },
+    { x: 1048, y: 642 },
+    { x: 1022, y: 644 },
+    { x: 998, y: 644 },
+    { x: 974, y: 647 },
+    { x: 948, y: 645 },
+    { x: 925, y: 646 }
   ],
 
   aluf: [
-    { x: 962, y: 619 }, // n
-    { x: 983, y: 619 }, // o
-    { x: 943, y: 618 }, // c
-    { x: 923, y: 617 }, // z
+    { x: 1259, y: 820 }, // n
+    { x: 1285, y: 821 }, // o
+    { x: 1233, y: 817 }, // c
+    { x: 1207, y: 816 }, // z
   ],
 
   sp: [
-    { x: 831, y: 777 },
-    { x: 811, y: 778 },
-    { x: 791, y: 779 },
-    { x: 771, y: 779 },
-    { x: 751, y: 779 },
-    { x: 731, y: 778 },
-    { x: 710, y: 779 },
-    { x: 689, y: 779 }
+    { x: 1091, y: 1011 },
+    { x: 1066, y: 1014 },
+    { x: 1040, y: 1014 },
+    { x: 1017, y: 1013 },
+    { x: 993, y: 1013 },
+    { x: 969, y: 1012 },
+    { x: 944, y: 1012 },
+    { x: 916, y: 1011 }
   ],
 
   ir: [
-    { x: 522, y: 656 },
-    { x: 502, y: 659 },
-    { x: 481, y: 657 },
-    { x: 461, y: 656 },
-    { x: 441, y: 657 },
-    { x: 422, y: 657 },
-    { x: 401, y: 657 },
-    { x: 380, y: 657 }
+    { x: 710, y: 854 },
+    { x: 685, y: 855 },
+    { x: 660, y: 855 },
+    { x: 637, y: 855 },
+    { x: 613, y: 858 },
+    { x: 587, y: 859 },
+    { x: 560, y: 858 },
+    { x: 535, y: 857 }
   ],
 
   pc: [
-    { x: 335, y: 649 },
-    { x: 315, y: 649 },
-    { x: 295, y: 649 },
-    { x: 274, y: 650 },
-    { x: 253, y: 650 },
-    { x: 233, y: 649 },
-    { x: 212, y: 650 },
-    { x: 193, y: 651 }
+    { x: 474, y: 854 },
+    { x: 448, y: 854 },
+    { x: 423, y: 854 },
+    { x: 397, y: 856 },
+    { x: 370, y: 854 },
+    { x: 345, y: 853 },
+    { x: 321, y: 852 },
+    { x: 296, y: 852 }
   ],
 
   st: [
-    { x: 81, y: 668 },
-    { x: 68, y: 666 },
-    { x: 56, y: 666 },
+    { x: 153, y: 855 },
+    { x: 133, y: 856 },
+    { x: 114, y: 856 },
   ],
 
   cw_r: [
-    { x: 1130, y: 927 }, // ALU
-    { x: 1092, y: 927 }, // Rd
-    { x: 1073, y: 927 }, // Rc
-    { x: 1053, y: 927 }, // Rb
-    { x: 1033, y: 927 }, // Ra
-    { x: 1013, y: 927 }, // SP
-    { x: 954, y: 927 }, // ME
-    { x: 874, y: 930 }, // PC
+    { x: 1475, y: 1211 }, // ALU
+    { x: 1424, y: 1210 }, // Rd
+    { x: 1400, y: 1209 }, // Rc
+    { x: 1373, y: 1208 }, // Rb
+    { x: 1348, y: 1208 }, // Ra
+    { x: 1322, y: 1208 }, // SP
+    { x: 1246, y: 1207 }, // ME
+    { x: 1147, y: 1206 }, // PC
   ],
 
   cw: [
     {}, {}, {},
-    { x: 1229, y: 935 }, // ALU0
-    { x: 1207, y: 936 },// ALU1
-    { x: 1187, y: 938 },// ALU2
-    { x: 1169, y: 937 },// ALUB
-    { x: 1151, y: 937 },// ALUCI
-    { x: 1132, y: 948 },// ALUW
-    { x: 1093, y: 947 },// Rd
-    { x: 1074, y: 948 },// Rc
-    { x: 1055, y: 949 },// Rb
-    { x: 1034, y: 949 },// Ra
-    { x: 1014, y: 948 },// SP
-    { x: 955, y: 948 },// MW
-    { x: 936, y: 943 },// PGM
-    { x: 994, y: 947 }, // IR
-    { x: 854, y: 938 }, // PCC
-    { x: 873, y: 949 }, // PC
-    { x: 915, y: 948 }, // MA
+    { x: 1604, y: 1225 }, // ALU0
+    { x: 1575, y: 1227 },// ALU1
+    { x: 1548, y: 1228 },// ALU2
+    { x: 1525, y: 1227 },// ALUB
+    { x: 1503, y: 1231 },// ALUCI
+    { x: 1475, y: 1237 },// ALUW
+    { x: 1424, y: 1232 },// Rd
+    { x: 1398, y: 1232 },// Rc
+    { x: 1373, y: 1233 },// Rb
+    { x: 1348, y: 1234 },// Ra
+    { x: 1321, y: 1232 },// SP
+    { x: 1246, y: 1232 },// MW
+    { x: 1218, y: 1218 },// PGM
+    { x: 1296, y: 1232 }, // IR
+    { x: 1118, y: 1216 }, // PCC
+    { x: 1145, y: 1230 }, // PC
+    { x: 1197, y: 1230 }, // MA
     {},
     {},
-    { x: 833, y: 937 },  // TR
-    { x: 801, y: 938 },  // HLT
+    { x: 1094, y: 1215 },  // TR
+    { x: 1055, y: 1215 },  // HLT
   ]
 };
 
@@ -569,15 +577,15 @@ Module.onRuntimeInitialized = function ()
 
       var rav = simLib.getValue(Component.Ra);
       renderByte(glow_red, rav, ledDefs.ra);
-      renderByte(on_red, rav, ledDefs.ra);
+      renderByte(on_red_br, rav, ledDefs.ra);
 
       var rbv = simLib.getValue(Component.Rb);
       renderByte(glow_red, rbv, ledDefs.rb);
-      renderByte(on_red, rbv, ledDefs.rb);
+      renderByte(on_red_br, rbv, ledDefs.rb);
 
       var rcv = simLib.getValue(Component.Rc);
       renderByte(glow_red, rcv, ledDefs.rc);
-      renderByte(on_red, rcv, ledDefs.rc);
+      renderByte(on_red_tc, rcv, ledDefs.rc);
 
       var rdv = simLib.getValue(Component.Rd);
       if (dispMode == 1)
@@ -589,6 +597,8 @@ Module.onRuntimeInitialized = function ()
         }
       }
 
+      var segSizeX =  getXSize(60);
+      var segSizeY =  getXSize(77);
       if (dispMode == 2)
       {
         var hex = rdv.toString(16).padStart(3, '0');
@@ -604,13 +614,13 @@ Module.onRuntimeInitialized = function ()
           else digit -= 48;
 
           var segs = seg_digits[digit];
-          if (segs & sega_f) ctx.drawImage(seg_a, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segb_f) ctx.drawImage(seg_b, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segc_f) ctx.drawImage(seg_c, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segd_f) ctx.drawImage(seg_d, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & sege_f) ctx.drawImage(seg_e, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segf_f) ctx.drawImage(seg_f, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segg_f) ctx.drawImage(seg_g, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
+          if (segs & sega_f) ctx.drawImage(seg_a, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segb_f) ctx.drawImage(seg_b, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segc_f) ctx.drawImage(seg_c, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segd_f) ctx.drawImage(seg_d, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & sege_f) ctx.drawImage(seg_e, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segf_f) ctx.drawImage(seg_f, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segg_f) ctx.drawImage(seg_g, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
         }
       }
       else
@@ -619,60 +629,60 @@ Module.onRuntimeInitialized = function ()
         {
           var digit = Math.floor((rdv / Math.pow(10, dig))) % 10;
           var segs = seg_digits[digit];
-          if (segs & sega_f) ctx.drawImage(seg_a, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segb_f) ctx.drawImage(seg_b, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segc_f) ctx.drawImage(seg_c, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segd_f) ctx.drawImage(seg_d, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & sege_f) ctx.drawImage(seg_e, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segf_f) ctx.drawImage(seg_f, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
-          if (segs & segg_f) ctx.drawImage(seg_g, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), getXSize(42), getYSize(59));
+          if (segs & sega_f) ctx.drawImage(seg_a, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segb_f) ctx.drawImage(seg_b, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segc_f) ctx.drawImage(seg_c, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segd_f) ctx.drawImage(seg_d, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & sege_f) ctx.drawImage(seg_e, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segf_f) ctx.drawImage(seg_f, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
+          if (segs & segg_f) ctx.drawImage(seg_g, getXPos(ledDefs.rd[dig].x), getYPos(ledDefs.rd[dig].y), segSizeX, segSizeY);
         }
       }
 
       var spv = simLib.getValue(Component.SP);
       renderByte(glow_yellow, spv, ledDefs.sp);
-      renderByte(on_yellow, spv, ledDefs.sp);
+      renderByte(on_yellow_br, spv, ledDefs.sp);
 
       var pcv = simLib.getValue(Component.PC);
       renderByte(glow_green, pcv, ledDefs.pc);
-      renderByte(on_green, pcv, ledDefs.pc);
+      renderByte(on_green_bl, pcv, ledDefs.pc);
 
       var stv = simLib.getValue(Component.TR);
-      renderByte(glow_green, stv, ledDefs.st, 50);
-      renderByte(on_green, stv, ledDefs.st, 50);
+      renderByte(glow_green, stv, ledDefs.st, 60);
+      renderByte(on_green_bl, stv, ledDefs.st, 60);
 
       var irv = simLib.getValue(Component.IR);
       renderByte(glow_yellow, irv, ledDefs.ir);
-      renderByte(on_yellow, irv, ledDefs.ir);
+      renderByte(on_yellow_bl, irv, ledDefs.ir);
 
       var mav = simLib.getValue(Component.MA);
       renderByte(glow_yellow, mav, ledDefs.ma);
-      renderByte(on_yellow, mav, ledDefs.ma);
+      renderByte(on_yellow_br, mav, ledDefs.ma);
 
       var mev = simLib.getValue(Component.ME);
       renderByte(glow_red, mev, ledDefs.me);
-      renderByte(on_red, mev, ledDefs.me);
+      renderByte(on_red_br, mev, ledDefs.me);
 
       var aluv = simLib.getValue(Component.AL);
       renderByte(glow_green, aluv, ledDefs.alu);
-      renderByte(on_green, aluv, ledDefs.alu);
+      renderByte(on_green_br, aluv, ledDefs.alu);
 
       var flv = simLib.getValue(Component.FL);
       renderByte(glow_yellow, flv, ledDefs.aluf);
-      renderByte(on_yellow, flv, ledDefs.aluf);
+      renderByte(on_yellow_br, flv, ledDefs.aluf);
 
       var buv = simLib.getValue(Component.BU);
       renderByte(glow_red, buv, ledDefs.bus);
-      renderByte(on_red, buv, ledDefs.bus);
+      renderByte(on_red_tc, buv, ledDefs.bus);
 
       if (autoClock)
       {
         ctx.drawImage(glow_green, getXPos(ledDefs.clkmode.x), getYPos(ledDefs.clkmode.y), getXSize(100), getYSize(100));
-        ctx.drawImage(on_green, getXPos(ledDefs.clkmode.x), getYPos(ledDefs.clkmode.y), getXSize(100), getYSize(100));
+        ctx.drawImage(on_green_br, getXPos(ledDefs.clkmode.x), getYPos(ledDefs.clkmode.y), getXSize(100), getYSize(100));
       }
 
       ctx.drawImage(glow_green, getXPos(ledDefs.runMode.x), getYPos(ledDefs.runMode.y), getXSize(100), getYSize(100));
-      ctx.drawImage(on_green, getXPos(ledDefs.runMode.x), getYPos(ledDefs.runMode.y), getXSize(100), getYSize(100));
+      ctx.drawImage(on_green_l, getXPos(ledDefs.runMode.x), getYPos(ledDefs.runMode.y), getXSize(100), getYSize(100));
 
 
       if ((tick % 2) && isRunning)
@@ -685,7 +695,7 @@ Module.onRuntimeInitialized = function ()
       if (cwv & (1 << 15))
       {
         ctx.drawImage(glow_green, getXPos(ledDefs.pgm.x), getYPos(ledDefs.pgm.y), getXSize(100), getYSize(100));
-        ctx.drawImage(on_green, getXPos(ledDefs.pgm.x), getYPos(ledDefs.pgm.y), getXSize(100), getYSize(100));
+        ctx.drawImage(on_green_br, getXPos(ledDefs.pgm.x), getYPos(ledDefs.pgm.y), getXSize(100), getYSize(100));
       }
 
       var bwv = 1 << (cwv & 0x07);
@@ -724,12 +734,12 @@ Module.onRuntimeInitialized = function ()
         if (on)
         {
           ctx.drawImage(glow_green, getXPos(ledDefs.cw[cwi].x), getYPos(ledDefs.cw[cwi].y), getXSize(100), getYSize(100));
-          ctx.drawImage(on_green, getXPos(ledDefs.cw[cwi].x), getYPos(ledDefs.cw[cwi].y), getXSize(100), getYSize(100));
+          ctx.drawImage(on_green_br, getXPos(ledDefs.cw[cwi].x), getYPos(ledDefs.cw[cwi].y), getXSize(100), getYSize(100));
         }
       }
       
-      lcd.render(ctx, getXPos(240), getYPos(588), getXSize(239), getYSize(76));
-      ctx.drawImage(lcdimg, getXPos(215), getYPos(550), getXSize(292), getYSize(126));
+      lcd.render(ctx, getXPos(340), getYPos(780), getXSize(300), getYSize(106));
+      ctx.drawImage(lcdimg, getXPos(313), getYPos(711), getXSize(674), getYSize(177));
       
     }
     window.setTimeout(loop, speed > 160 ? 0 : (200 / (speed <= 0 ? 1 : speed)));
