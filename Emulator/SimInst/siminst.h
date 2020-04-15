@@ -47,6 +47,10 @@ SIDLLEXPORT void siDestroy();
 
 SIDLLEXPORT void siLoadProgram(const char* program);
 
+SIDLLEXPORT void siLoadRam(const char* data);
+
+SIDLLEXPORT byte siRamByte(int offset);
+
 // set the clock state (1 = high, 0 = low)
 SIDLLEXPORT void siSetClock(int high);
 

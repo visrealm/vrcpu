@@ -90,6 +90,21 @@ DLLEXPORT void loadProgram(Computer* c, const char* hex)
 	}
 }
 
+DLLEXPORT void loadRam(Computer* c, const char* hex)
+{
+  size_t bytes = strlen(hex) / 2;
+  for (int i = 0; i < bytes; ++i)
+  {
+    byte b = 0;
+    sscanf(hex + i * 2, "%02hhX", &b);
+    writeRam(c->ram, i, b);
+  }
+}
+
+DLLEXPORT byte ramByte(Computer* c, int offset)
+{
+  return readRam(c->ram, offset);
+}
 
 DLLEXPORT void computerTick(Computer* c, int high)
 {

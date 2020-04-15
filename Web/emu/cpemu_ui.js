@@ -342,8 +342,8 @@ var getMousePos = function (evt)
 var getMouseDist = function (evt, target)
 {
   var pos = getMousePos(evt);
-  var dx = Math.abs(pos.x - target.x);
-  var dy = Math.abs(pos.y - target.y);
+  var dx = Math.abs(pos.x - getXPos(target.x));
+  var dy = Math.abs(pos.y - getYPos(target.y));
   return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -376,6 +376,8 @@ Module.onRuntimeInitialized = function ()
     initialise: Module.cwrap('simLibInitialise', null),
     destroy: Module.cwrap('simLibDestroy', null),
     loadProgram: Module.cwrap('simLibLoadProgram', null, ['string']),
+    loadRam: Module.cwrap('simLibLoadRam', null, ['string']),
+    ramByte: Module.cwrap('simLibRamByte', 'number', ['number']),
     setClock: Module.cwrap('simLibSetClock', null, ['number']),
     reset: Module.cwrap('simLibReset', null),
     getValue: Module.cwrap('simLibGetValue', 'number', ['number']),
@@ -388,6 +390,7 @@ Module.onRuntimeInitialized = function ()
   simLib.initialise();
 
   lcd = vrEmuLcd.registerLcd(simLib.getLcd());
+  //lcd.colorScheme = vrEmuLcd.Schemes.GreenBlack;
 
   var programHex = getParam("h");
   if (!programHex) 
@@ -395,7 +398,15 @@ Module.onRuntimeInitialized = function ()
     programHex = "37c1cf3f012f00";
   }
 
-  simLib.loadProgram(programHex);
+  var ramData = programHex.substring(512);
+
+  simLib.loadProgram(programHex.substring(0, 512));
+  
+  if (ramData) 
+  {
+    simLib.loadRam(ramData);
+  }
+
   var tick = 0;
   var lastTick = 0;
   var lastD = 0;
@@ -419,33 +430,33 @@ Module.onRuntimeInitialized = function ()
 
   canv.addEventListener('click', function (evt)
   {
-    if (getMouseDist(evt, { x: getXPos(clkMode.x), y: getYPos(clkMode.y) }) < getXSize(30))
+    if (getMouseDist(evt, clkMode) < getXSize(30))
     {
       autoClock = !autoClock;
       if (!autoClock && (tick % 2))++tick;
     }
-    else if (getMouseDist(evt, { x: getXPos(spdUp.x), y: getYPos(spdUp.y) }) < getXSize(30))
+    else if (getMouseDist(evt, spdUp) < getXSize(30))
     {
       if (speed < 500)
       {
         speed += 20;
       }
     }
-    else if (getMouseDist(evt, { x: getXPos(spdDn.x), y: getYPos(spdDn.y) }) < getXSize(30))
+    else if (getMouseDist(evt, spdDn) < getXSize(30))
     {
       if (speed > 0)
       {
         speed -= 20;
       }
     }
-    else if (getMouseDist(evt, { x: getXPos(dispNeg.x), y: getYPos(dispNeg.y) }) < getXSize(30))
+    else if (getMouseDist(evt, dispNeg) < getXSize(30))
     {
       if (dispMode == 1)
         dispMode = 0;
       else
         dispMode = 1;
     }
-    else if (getMouseDist(evt, { x: getXPos(dispHex.x), y: getYPos(dispHex.y) }) < getXSize(30))
+    else if (getMouseDist(evt, dispHex) < getXSize(30))
     {
       if (dispMode == 2)
         dispMode = 0;
@@ -457,31 +468,31 @@ Module.onRuntimeInitialized = function ()
   var setCursor = function (evt)
   {
    canv.style.cursor = "grab";
-    if (getMouseDist(evt, { x: getXPos(clkMode.x), y: getYPos(clkMode.y) }) < getXSize(30))
+    if (getMouseDist(evt, clkMode) < getXSize(30))
     {
       canv.title = "Clock mode (auto/manual).";
     }
-    else if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < getXSize(30))
+    else if (getMouseDist(evt, step) < getXSize(30))
     {
       canv.title = "Manual step.";
     }
-    else if (getMouseDist(evt, { x: getXPos(reset.x), y: getYPos(reset.y) }) < getXSize(30))
+    else if (getMouseDist(evt, reset) < getXSize(30))
     {
       canv.title = "Reset program counter.";
     }
-    else if (getMouseDist(evt, { x: getXPos(spdUp.x), y: getYPos(spdUp.y) }) < getXSize(30))
+    else if (getMouseDist(evt, spdUp) < getXSize(30))
     {
       canv.title = "Increase clock speed.";
     }
-    else if (getMouseDist(evt, { x: getXPos(spdDn.x), y: getYPos(spdDn.y) }) < getXSize(30))
+    else if (getMouseDist(evt, spdDn) < getXSize(30))
     {
       canv.title = "Decrease clock speed.";
     }
-    else if (getMouseDist(evt, { x: getXPos(dispNeg.x), y: getYPos(dispNeg.y) }) < getXSize(30))
+    else if (getMouseDist(evt, dispNeg) < getXSize(30))
     {
       canv.title = "Toggle display (signed/unsigned)";
     }
-    else if (getMouseDist(evt, { x: getXPos(dispHex.x), y: getYPos(dispHex.y) }) < getXSize(30))
+    else if (getMouseDist(evt, dispHex) < getXSize(30))
     {
       canv.title = "Toggle display (hex/dec)";
     }
@@ -500,11 +511,11 @@ Module.onRuntimeInitialized = function ()
 
   canv.addEventListener('mousedown', function (evt)
   {
-    if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < getXSize(30))
+    if (getMouseDist(evt, step) < getXSize(30))
     {
       if (tick % 2 == 0)++tick;
     }
-    else if (getMouseDist(evt, { x: getXPos(reset.x), y: getYPos(reset.y) }) < getXSize(30))
+    else if (getMouseDist(evt, reset) < getXSize(30))
     {
       isResetting = true;
     }
@@ -517,7 +528,7 @@ Module.onRuntimeInitialized = function ()
 
   canv.addEventListener('mouseup', function (evt)
   {
-    if (getMouseDist(evt, { x: getXPos(step.x), y: getYPos(step.y) }) < getXSize(30))
+    if (getMouseDist(evt, step) < getXSize(30))
     {
       if (tick % 2)++tick;
     }
@@ -550,7 +561,7 @@ Module.onRuntimeInitialized = function ()
   var wasRunning = true;
   var loop = function ()
   {
-    var stepsPerCycle = 1;
+    var stepsPerCycle = 0;
     if (autoClock && (speed > 150))
     {
         stepsPerCycle = (speed - 150) + 1;
@@ -584,6 +595,13 @@ Module.onRuntimeInitialized = function ()
 
       if (isRunning != wasRunning)
       {
+        var ramImage = ""
+        for (var i = 0; i < 256; ++i)
+        {
+          var b = simLib.ramByte(i);
+          ramImage += b.toString(16).padStart(2, '0');
+        }
+        console.log(ramImage);
         console.log(tick);
       }
       wasRunning = isRunning;
@@ -599,7 +617,7 @@ Module.onRuntimeInitialized = function ()
 
       var rbv = simLib.getValue(Component.Rb);
       renderByte(glow_red, rbv, ledDefs.rb);
-      renderByte(on_red_br, rbv, ledDefs.rb);
+      renderByte(on_red, rbv, ledDefs.rb);
 
       var rcv = simLib.getValue(Component.Rc);
       renderByte(glow_red, rcv, ledDefs.rc);
@@ -704,7 +722,7 @@ Module.onRuntimeInitialized = function ()
       drawScaled(on_green_l, ledDefs.runMode.x, ledDefs.runMode.y, 100, 100);
 
 
-      if ((tick % 2) && isRunning)
+      if (((stepsPerCycle > 0 && (tick % 7) != 0) || (tick % 2)) && isRunning)
       {
         drawScaled(glow_blue, ledDefs.clk.x, ledDefs.clk.y, 100, 100);
         drawScaled(on_blue, ledDefs.clk.x, ledDefs.clk.y, 100, 100);
@@ -719,7 +737,7 @@ Module.onRuntimeInitialized = function ()
 
       var bwv = 1 << (cwv & 0x07);
       renderByte(glow_green, bwv, ledDefs.cw_r);
-      renderByte(on_green, bwv, ledDefs.cw_r);
+      renderByte(on_green_br, bwv, ledDefs.cw_r);
 
 
       for (var cwi = 0; cwi < ledDefs.cw.length; ++cwi)

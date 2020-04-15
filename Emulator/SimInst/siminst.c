@@ -42,6 +42,24 @@ SIDLLEXPORT void siLoadProgram(const char* program)
 	}
 }
 
+SIDLLEXPORT void siLoadRam(const char* data)
+{
+  if (_c)
+  {
+    loadRam(_c, data);
+    computerReset(_c);
+  }
+}
+
+SIDLLEXPORT byte siRamByte(int offset)
+{
+  if (_c)
+  {
+    return ramByte(_c, offset);
+  }
+  return 0;
+}
+
 // set the clock state (1 = high, 0 = low)
 SIDLLEXPORT void siSetClock(int high)
 {

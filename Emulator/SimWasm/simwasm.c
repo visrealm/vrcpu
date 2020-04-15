@@ -21,6 +21,18 @@ void simLibLoadProgram(const char* program)
 	siLoadProgram(program);
 }
 
+EMSCRIPTEN_KEEPALIVE
+void simLibLoadRam(const char* data)
+{
+	siLoadRam(data);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int simLibRamByte(int offset)
+{
+	return siRamByte(offset);
+}
+
 // set the clock state (1 = high, 0 = low)
 EMSCRIPTEN_KEEPALIVE
 void simLibSetClock(int high)

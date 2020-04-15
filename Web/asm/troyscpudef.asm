@@ -106,6 +106,7 @@
     lcc  {src: reg}              -> 0b111 @ 0b100 @ src[1:0]
     lcd  {src: reg}              -> 0b111 @ 0b111 @ src[1:0]
 
+	bin {lbl}					 -> lbl[7:0]
 }
 
 LCD_CMD_CLEAR                = 0b00000001
@@ -136,6 +137,7 @@ LCD_CMD_2LINE       = 0x08
 
 LCD_INITIALIZE      = LCD_CMD_FUNCTIONSET | LCD_CMD_8BITMODE | LCD_CMD_2LINE
 
+RAM_OFFSET=0x100
 
 
-#addr 0x000
+#addr 0x00

@@ -88,7 +88,10 @@ typedef struct DLLEXPORT
 DLLEXPORT Computer* newComputer();
 DLLEXPORT void destroyComputer(Computer* r);
 
-DLLEXPORT void loadProgram(Computer *c, const char *hex);
+DLLEXPORT void loadProgram(Computer* c, const char* hex);
+DLLEXPORT void loadRam(Computer* c, const char* data);
+
+DLLEXPORT byte ramByte(Computer* c, int offset);
 
 // state: 1 = high, 0 = low
 DLLEXPORT void computerTick(Computer* r, int high);
