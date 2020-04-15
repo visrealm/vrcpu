@@ -49,10 +49,8 @@ function loadProgramFile(file) {
   fetch(file)
     .then(r => r.text())
     .then(r => g_codeEditor.setValue(r))
-
-  g_codeEditor.refresh()
-  
-  assemble();
+    .then(r => g_codeEditor.refresh())
+    .then(r => assemble())
 }
 
 
@@ -69,7 +67,7 @@ function setupEditor() {
 
   g_codeEditor.setOption("theme", "lesser-dark");
   
-  var example = getParam("e");
+  example = getParam("e");
   if (!example)
   {
 	  example = "Fibonacci";
