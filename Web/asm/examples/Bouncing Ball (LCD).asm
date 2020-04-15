@@ -1,5 +1,5 @@
-; ===============================================
-; Bounce a ball around the character LCD
+; -----------------------------------------------
+; Bounce a ball around the character LCD display
 ; -----------------------------------------------
 ;
 ; Troy's 8-bit computer - Emulator
@@ -15,7 +15,7 @@
 ; display mode flags
 DISPLAY_MODE = LCD_CMD_DISPLAY | LCD_CMD_DISPLAY_ON
 
-; memory address constants
+; memory location constants
 ; -----------------------------
 _PIXELX        = 0x00        ; ball overall X position
 _DIR_X         = _PIXELX + 1 ; ball X direction
@@ -215,7 +215,8 @@ updateChar:
 	lcd Ra
 	lcd Ra
 	lcd Rb
-	lcd #0 ; clear the last row
+	clr Rb
+	lcd Rb ; clear the last row
 	ret
 ; end updateChar
 
@@ -370,14 +371,15 @@ outputCharacters:
 	; Rc will be 0 (no space) or -1 (leading space)
 	.outputChars:
 		tst Rc
+		data Ra, 32
 		jz .skipSpace
-		lcd #32
+		lcd Ra
 		.skipSpace:
 		lcd Rb
 		inc Rb
 		inc Rb
 		lcd Rb
-		lcd #32
+		lcd Ra
 		ret
 ; end outputCharacters
 
@@ -392,12 +394,15 @@ clearChars:
 	; character set
 	clr Ra
 	call setCgRamAddr
-	clr Ra
 	
 	; clear the data 8 x 4 = 32 bytes
 	; loop unrolled for minor performance win
-	data Rb, 8
+	data Rb, 4
 	.next:
+	  lcd Rc
+	  lcd Rc
+	  lcd Rc
+	  lcd Rc
 	  lcd Rc
 	  lcd Rc
 	  lcd Rc
@@ -457,31 +462,16 @@ div8:
 ; -----------------------------------------------
 
 ballData:
-
-; filled ball
-;#d32 0x0c1e0000
-;#d32 0x060f0000
-;#d32 0x03070010
-;#d32 0x01031018
-;#d32 0x0001181c
-
 ; empty ball
 ;#d32 0x0c120000
 ;#d32 0x06090000
-;#d32 0x03040010
-;#d32 0x01021008
-;#d32 0x00011804
+;#d32 0x03080000
+;#d32 0x01020010
+;#d32 0x00011008
 
-; square ball
-;#d32 0x1e1e0000
-;#d32 0x0f0f0000
-;#d32 0x07071010
-;#d32 0x03031818
-;#d32 0x01011c1c
-
-; empty square
-#d32 0x1e120000
-#d32 0x0f090000
-#d32 0x07041010
-#d32 0x03021808
-#d32 0x01011c04
+; filled ball
+#d32 0x0c1e0000
+#d32 0x060f0000
+#d32 0x03070000
+#d32 0x01030010
+#d32 0x00011018
