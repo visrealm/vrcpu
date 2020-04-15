@@ -41,10 +41,10 @@
 #define CPU_PGM   D8
 
 #define SSID1 "VisualRealmSoftware2"
-#define PASS1 "XXXXXX"
+#define PASS1 "jibbers182"
 
 #define SSID2 "visrealmS9"
-#define PASS2 "XXXXXX"
+#define PASS2 "Jibbers182"
 
 
 // parameters for the aseembler web host (HTTPS)
@@ -113,20 +113,14 @@ void setup() {
 bool programLoaded = false;
 String lastProgram = "";
 
+// load the program. First 256 bytes is PGM memory, the remainder goes to runtime RAM
 void loadProgram(String hex)
 {
-  if (hex.length() > 512)
+  if (hex.length() > 1024)
     return;
 
   // convert the hex program to binary
-  byte code[256];
   size_t bytes = hex.length() / 2;
-  byte tmp = 0;
-  for (size_t i = 0; i < bytes; ++i) {
-    sscanf(hex.c_str() + (i * 2), "%2x", &tmp);
-    code[i] = tmp;    
-  }
-
   Serial.print("Bytes: "); 
   Serial.println(bytes);  
 
@@ -134,41 +128,54 @@ void loadProgram(String hex)
   pinMode(CPU_RST, OUTPUT);
   digitalWrite(CPU_RST, LOW);
   digitalWrite(CPU_EN, LOW);
-  digitalWrite(CPU_PGM, HIGH);
+  digitalWrite(CPU_PGM, LOW);
 
   // cycle through the program's bytes
+  byte tmp = 0;
   for (size_t i = 0; i < bytes; ++i)
   {
+    sscanf(hex.c_str() + (i * 2), "%2x", &tmp);
+    
     // output the address to the bus
     digitalWrite(DFF_CLK, LOW);
     shiftOut(SHIFT_DATA, SHIFT_CLK, LSBFIRST, i);
     digitalWrite(DFF_CLK, HIGH);
 
     // enable MAW
+    delayMicroseconds(100);
     digitalWrite(CPU_MA_W, LOW);
 
     // cycle clock
-    delay(5);    
+    delayMicroseconds(100);
     digitalWrite(CPU_CLK, HIGH);
-    delay(5);    
+    delayMicroseconds(100);
     digitalWrite(CPU_CLK, LOW);
+    delayMicroseconds(100);
+
+    // disable MAW
+    digitalWrite(CPU_MA_W, HIGH);
 
    // output the data (code) to bus
     digitalWrite(DFF_CLK, LOW);
-    shiftOut(SHIFT_DATA, SHIFT_CLK, LSBFIRST, code[i]);
+    shiftOut(SHIFT_DATA, SHIFT_CLK, LSBFIRST, tmp);
     digitalWrite(DFF_CLK, HIGH);
-    
+
+    // set PGM
+    digitalWrite(CPU_PGM, i < 256 ? HIGH : LOW);
+
     // enable MEM write
+    delayMicroseconds(100);
     digitalWrite(CPU_MEM_W, LOW);
-    digitalWrite(CPU_MA_W, HIGH);
     
     // cycle clock
-    delay(5);    
+    delayMicroseconds(100);
     digitalWrite(CPU_CLK, HIGH);
-    delay(5);    
+    delayMicroseconds(100);
     digitalWrite(CPU_CLK, LOW);
+    delayMicroseconds(100);
     
     digitalWrite(CPU_MEM_W, HIGH);
+    digitalWrite(CPU_PGM, LOW);    
   }
 
   // give control back to the CPU
