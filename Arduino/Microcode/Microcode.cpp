@@ -284,7 +284,7 @@ uint32_t getLodControlWord(const EepromAddress& address, std::string& desc)
 
       switch (address.microtime())
       {
-        case STEP1: return Register::Acc().writeToBus() | Register::PC().readFromBus(); // temporarity store Acc
+        case STEP1: return Register::Acc().writeToBus() | Register::PC().readFromBus(); // temporarily store Acc
         case STEP2: return Register::StP().writeToBus() | _ALW | ALC | ALU_A_PLUS_B | _MAW;
         case STEP3: return Register::StP().readFromBus() | BW_ALU;
         case STEP4: return Register::PC().writeToBus() | _ALW | ALU_A_PLUS_B; // restore Acc
