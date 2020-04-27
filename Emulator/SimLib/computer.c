@@ -106,6 +106,11 @@ DLLEXPORT byte ramByte(Computer* c, int offset)
   return readRam(c->ram, offset);
 }
 
+DLLEXPORT void setInput(Computer* c, byte inputByte)
+{
+  setRegisterValue(c->rd, inputByte);
+}
+
 DLLEXPORT void computerTick(Computer* c, int high)
 {
 	if (c->controlWord & HLT)

@@ -378,6 +378,7 @@ Module.onRuntimeInitialized = function ()
     loadProgram: Module.cwrap('simLibLoadProgram', null, ['string']),
     loadRam: Module.cwrap('simLibLoadRam', null, ['string']),
     ramByte: Module.cwrap('simLibRamByte', 'number', ['number']),
+    setInput: Module.cwrap('simLibSetInput', null, ['number']),
     setClock: Module.cwrap('simLibSetClock', null, ['number']),
     reset: Module.cwrap('simLibReset', null),
     getValue: Module.cwrap('simLibGetValue', 'number', ['number']),
@@ -427,6 +428,49 @@ Module.onRuntimeInitialized = function ()
   var dispMode = 0; // unsigned
 
   var isResetting = false;
+
+  var inputByte = 0;
+
+  var BTN_LEFT = 0b01000000;
+  var BTN_DOWN = 0b00100000;
+  var BTN_RIGHT = 0b00010000;
+  var BTN_UP  = 0b10000000;
+
+  document.onkeydown = function(event) {
+    switch (event.keyCode) {
+       case 37:
+          inputByte |= BTN_LEFT;
+          break;
+       case 38:
+          inputByte |= BTN_UP;
+          break;
+       case 39:
+          inputByte |= BTN_RIGHT;
+          break;
+       case 40:
+          inputByte |= BTN_DOWN;
+          break;
+    }
+    simLib.setInput(inputByte);
+  };
+  document.onkeyup = function(event) {
+    switch (event.keyCode) {
+      case 37:
+          inputByte &= ~BTN_LEFT;
+          break;
+      case 38:
+          inputByte &= ~BTN_UP;
+          break;
+      case 39:
+          inputByte &= ~BTN_RIGHT;
+          break;
+      case 40:
+          inputByte &= ~BTN_DOWN;
+          break;
+    }
+    simLib.setInput(inputByte);
+  };
+
 
   canv.addEventListener('click', function (evt)
   {

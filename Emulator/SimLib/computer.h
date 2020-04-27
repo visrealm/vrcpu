@@ -93,6 +93,8 @@ DLLEXPORT void loadRam(Computer* c, const char* data);
 
 DLLEXPORT byte ramByte(Computer* c, int offset);
 
+DLLEXPORT void setInput(Computer* c, byte inputByte);
+
 // state: 1 = high, 0 = low
 DLLEXPORT void computerTick(Computer* r, int high);
 

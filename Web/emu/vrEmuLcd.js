@@ -47,7 +47,8 @@ vrEmuLcd.Schemes = {
   BlueWhite: {
     BackColor: "#1f1fffff",
     PixelOnColor: "#f0f0ffff",
-    PixelOffColor: "#0000e0ff"
+    PixelOffColor: "#0000e0ff",
+    PixelTransColor: "#ff00e0ff"
   },
   GreenBlack: {
     BackColor: "#7DBE00",
@@ -112,11 +113,21 @@ vrEmuLcdModule = {
 
             for (var x = 0; x < this.numPixelsX; ++x) {
               var s = this.pixelState(x, y);
-              switch (s) {
-                case -1:
-                  continue;
-                  break;
-  
+              ctx.globalAlpha = 1.0;
+              if (s == -1)
+              {
+                continue;
+              }
+              
+              if (this.colorScheme.PixelTransColor && s > 1)
+              {
+                ctx.fillStyle = this.colorScheme.PixelTransColor;
+                ctx.fillRect(xPos + (x + xbuffer) * lcdScale, yPos + (y + ybuffer) * lcdScale, lcdScale * 0.75, lcdScale * 0.75);
+                ctx.globalAlpha = 1.0 - (s / 20.0);
+              }
+
+              switch (s & 0x01) {
+ 
                 case 0:
                   ctx.fillStyle = this.colorScheme.PixelOffColor;
                   break;
@@ -129,6 +140,7 @@ vrEmuLcdModule = {
               ctx.fillRect(xPos + (x + xbuffer) * lcdScale, yPos + (y + ybuffer) * lcdScale, lcdScale * 0.75, lcdScale * 0.75);
             }
           }
+          ctx.globalAlpha = 1.0;
         }
       }
     }

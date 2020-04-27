@@ -193,7 +193,7 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 262144, "filename": "/rom.hex"}], "remote_package_size": 262144, "package_uuid": "a8b8d489-2d19-4dce-98ec-03186d9b2fd2"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 262144, "filename": "/rom.hex"}], "remote_package_size": 262144, "package_uuid": "e9736003-3644-44aa-b990-e2a0245031d7"});
 
 })();
 
@@ -5486,6 +5486,12 @@ var _simLibSetClock = Module["_simLibSetClock"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_simLibSetClock"].apply(null, arguments)
+};
+
+var _simLibSetInput = Module["_simLibSetInput"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_simLibSetInput"].apply(null, arguments)
 };
 
 var _vrEmuLcdCharBits = Module["_vrEmuLcdCharBits"] = function() {

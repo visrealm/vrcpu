@@ -33,6 +33,12 @@ int simLibRamByte(int offset)
 	return siRamByte(offset);
 }
 
+EMSCRIPTEN_KEEPALIVE
+void simLibSetInput(byte inputByte)
+{
+	siSetInput(inputByte);
+}
+
 // set the clock state (1 = high, 0 = low)
 EMSCRIPTEN_KEEPALIVE
 void simLibSetClock(int high)

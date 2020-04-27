@@ -60,6 +60,15 @@ SIDLLEXPORT byte siRamByte(int offset)
   return 0;
 }
 
+SIDLLEXPORT void siSetInput(byte inputByte)
+{
+  if (_c)
+  {
+    setInput(_c, inputByte);
+  }
+}
+
+
 // set the clock state (1 = high, 0 = low)
 SIDLLEXPORT void siSetClock(int high)
 {

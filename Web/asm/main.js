@@ -73,7 +73,7 @@ function setupEditor() {
 	  example = "Fibonacci";
   }
 
-  loadProgramFile("examples/"  + example + ".asm");
+  loadProgramFile("examples/"  + example.replace("+"," ") + ".asm");
 }
 
 

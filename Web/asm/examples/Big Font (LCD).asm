@@ -65,7 +65,7 @@ _RESETTING             = 0x03
 jmp start
 
 ; the nulll-delimited text to display.
-text: #str "DAD SUCKS!!! \0"
+text: #str "HTTPS:/CPU.VISUALREALMSOFTWARE.COM \0"
 
 
 ; start of the program
@@ -161,11 +161,18 @@ start:
 	pop Rc
 	lcd Rc
 	
+	data Rb, 100
+	call delay
+	
 	data Ra, SCROLL_LEFT
 	lcc Ra
 	
 	jmp .loop
 
+delay:
+	dec Rb
+	jnz delay
+	ret
 
 ; leftRotate()
 ; bitwise rotate Rb
@@ -264,14 +271,14 @@ buildCustomCharacters:
 ; confusion with a null terminator
 charData: 
 ; 08 (07)
-#d8 0b00011   
+#d8 0b00001   
+#d8 0b00011
+#d8 0b00011
+#d8 0b00111
+#d8 0b00111
 #d8 0b01111
 #d8 0b01111
-#d8 0b11111
-#d8 0b11111
-#d8 0b11111
-#d8 0b11111
-#d8 0b11111
+#d8 0b01111
 
 ; 01 (06)
 #d8 0b11111
@@ -284,14 +291,14 @@ charData:
 #d8 0b11111
 
 ; 02 (05)
+#d8 0b10000
 #d8 0b11000
+#d8 0b11000
+#d8 0b11100
+#d8 0b11100
 #d8 0b11110
 #d8 0b11110
-#d8 0b11111
-#d8 0b11111
-#d8 0b11111
-#d8 0b11111
-#d8 0b11111
+#d8 0b11110
 
 ; 03 (04)
 #d8 0b11111
@@ -332,7 +339,7 @@ bin PLUS          ; +
 bin NULL          ; ,
 bin MINUS         ; -
 bin STOP          ; .
-bin NULL          ; /
+bin SLASH         ; /
 bin ZERO          ; 0
 bin ONE           ; 1
 bin TWO           ; 2
@@ -395,12 +402,14 @@ SPACE:         #d16 0xee00
 EXCLAMATION:   #d16 0xf600
 DOUBLE_QUOTE:  ;#d32 0x3eee3e00
 SINGLE_QUOTE:  #d16 0x3e00
-OPEN_BRACKET:  #d24 0x873400
-CLOSE_BRACKET: #d24 0x342500
+OPEN_BRACKET:  #d16 0x4e00;24 0x873400
+CLOSE_BRACKET: #d16 0xe300;24 0x342500
 PLUS:          #d32 0x43ff4300
 
 MINUS:         #d32 0x43434300
 STOP:          #d16 0xe400
+SLASH:         ;#d32 0xe8855e00
+SLASHES:       #d48 0xe88558855e00
 ZERO:          #d32 0x87342500
 ONE:           #d32 0x34ffe400
 TWO:           #d32 0x17142400
