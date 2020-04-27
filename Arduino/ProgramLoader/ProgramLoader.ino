@@ -40,16 +40,16 @@
 #define CPU_CLK   D7
 #define CPU_PGM   D8
 
-#define SSID1 "VisualRealmSoftware2"
-#define PASS1 "jibbers182"
+#define SSID1 "YOURSSID1"
+#define PASS1 "YOURPW1"
 
-#define SSID2 "visrealmS9"
-#define PASS2 "Jibbers182"
+#define SSID2 "YOURSSID2"
+#define PASS2 "YOURPW2"
 
 
 // parameters for the aseembler web host (HTTPS)
 #define PROGRAM_HOST     "cpu.visualrealmsoftware.com"
-#define PROGRAM_HOST_KEY "45e8c64244a1ac0b7002d566783d5f141db24314"
+#define PROGRAM_HOST_KEY "83f67255cc18cb313e2a2c2981c21c01816f3e85"
 #define PROGRAM_PATH     "/asm/current/"
 
 // seconds between program poll requests
